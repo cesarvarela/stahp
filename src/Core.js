@@ -86,9 +86,8 @@ class Core {
     async openBlockerWindow({ display }) {
         // Create the browser window.
         const window = new BrowserWindow({
-            width: 800,
-            height: 600,
-            // frame: false,
+            ...display.bounds,
+            frame: false,
             skipTaskbar: true,
             webPreferences: {
                 preload: BLOCKER_PRELOAD_WEBPACK_ENTRY
@@ -96,7 +95,13 @@ class Core {
         });
 
         window.setAlwaysOnTop(true, "screen-saver")
-        window.loadURL(BLOCKER_WEBPACK_ENTRY);
+        window.loadURL(BLOCKER_WEBPACK_ENTRY)
+
+        //TODO: https://github.com/electron/electron/issues/10862
+        setTimeout(() => window.setBounds(display.bounds), 0);
+        setTimeout(() => window.setBounds(display.bounds), 0);
+        setTimeout(() => window.setBounds(display.bounds), 0);
+        setTimeout(() => window.setBounds(display.bounds), 0);
 
         return window
     }
