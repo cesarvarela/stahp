@@ -14,6 +14,7 @@ class Core {
         await this.setupTray()
         await this.setupIpc()
         await this.openSettingsWindow()
+        await this.setupScheduler()
     }
 
     setupTray() {
@@ -59,6 +60,36 @@ class Core {
         })
     }
 
+    setupScheduler() {
+
+        this.scheduler = require('node-schedule')
+        this.loadSchedules()
+    }
+
+    async loadSchedules() {
+
+        // this.addSchedule({ cron: '*/5 * * * * *', type: 'block', theme: 'chuku' })
+    }
+
+    async addSchedule({ cron, type, theme }) {
+
+        this.scheduler.scheduleJob(`${type}:${theme}`, cron, () => {
+
+            if (type === 'block') {
+
+                if (!this.blockerWindows.length) {
+
+                    this.block()
+                }
+            }
+        })
+    }
+
+    async removeSchedule() {
+
+    }
+
+
     async unblock() {
 
         for (const window of this.blockerWindows) {
@@ -79,7 +110,7 @@ class Core {
 
         for (const display of displays) {
             const window = this.openBlockerWindow({ display })
-            this.windows.push(window)
+            this.blockerWindows.push(window)
         }
     }
 
