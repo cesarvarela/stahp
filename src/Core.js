@@ -94,8 +94,9 @@ class Core {
             },
         });
 
+        window.loadFile(path.resolve(app.getAppPath(), 'themes', 'default', 'index.html'))
+
         window.setAlwaysOnTop(true, "screen-saver")
-        window.loadURL(BLOCKER_WEBPACK_ENTRY)
 
         //TODO: https://github.com/electron/electron/issues/10862
         setTimeout(() => window.setBounds(display.bounds), 0);
@@ -104,6 +105,21 @@ class Core {
         setTimeout(() => window.setBounds(display.bounds), 0);
 
         return window
+    }
+
+    async downloadTheme() {
+
+        if (!this.octokit) {
+
+            const { Octokit } = require('octokit')
+
+            this.octokit = new Octokit({
+                userAgent: 'stahp/v0.1',
+            })
+        }
+
+        const repo = await this.octokit.rest.repos.downloadArchive({ owner: `cesarvarela`, repo: `stahp-default` })
+        //TODO: unzip and stuff here
     }
 
     async openSettingsWindow() {

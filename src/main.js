@@ -12,7 +12,8 @@ let core = null
 app.on('ready', async () => {
   core = new Core()
   await core.init()
-  await core.block()
+  // await core.downloadTheme()
+  // await core.block()
 });
 
 app.on('window-all-closed', () => {
