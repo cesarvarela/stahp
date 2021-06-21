@@ -48,8 +48,8 @@ class Core {
 
     async setupStorage() {
 
-        if (!await this.hasSetting({ key: 'settings' })) {
-            await this.setSetting({ key: 'settings', data: {} })
+        if (!await this.hasSetting({ key: 'scheduler' })) {
+            await this.setSetting({ key: 'scheduler', data: { schedules: [] } })
         }
     }
 
@@ -58,37 +58,47 @@ class Core {
         ipcMain.handle('close', async (e) => {
             e.sender.destroy()
         })
+
+        ipcMain.handle('saveSchedulerSettings', (_, settings) => this.saveSchedulerSettings(settings))
+        ipcMain.handle('getSchedulerSettings', () => this.getSchedulerSettings())
     }
 
-    setupScheduler() {
+    async setupScheduler() {
 
         this.scheduler = require('node-schedule')
-        this.loadSchedules()
     }
 
-    async loadSchedules() {
+    async loadScheduler() {
 
-        // this.addSchedule({ cron: '*/5 * * * * *', type: 'block', theme: 'chuku' })
+        const schedules = await this.getSchedulerSettings()
+
+        //TODO: create schedules in node-schedule
+
+        // const { cron, type, theme } = {}
+        // this.scheduler.scheduleJob(`${type}:${theme}`, cron, () => {
+
+        //     if (type === 'block') {
+
+        //         if (!this.blockerWindows.length) {
+
+        //             this.block()
+        //         }
+        //     }
+        // })
     }
 
-    async addSchedule({ cron, type, theme }) {
+    async getSchedulerSettings() {
 
-        this.scheduler.scheduleJob(`${type}:${theme}`, cron, () => {
+        const settings = await this.getSetting({ key: 'scheduler' })
 
-            if (type === 'block') {
-
-                if (!this.blockerWindows.length) {
-
-                    this.block()
-                }
-            }
-        })
+        return settings
     }
 
-    async removeSchedule() {
+    async saveSchedulerSettings(settings) {
 
+        await this.setSetting({ key: 'scheduler', data: settings })
+        return settings
     }
-
 
     async unblock() {
 
@@ -115,7 +125,7 @@ class Core {
     }
 
     async openBlockerWindow({ display }) {
-        // Create the browser window.
+
         const window = new BrowserWindow({
             ...display.bounds,
             frame: false,
