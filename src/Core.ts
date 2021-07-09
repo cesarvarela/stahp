@@ -1,13 +1,22 @@
 import { Tray, Menu, app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import path from 'path'
 import storage from 'electron-json-storage'
+import { ISetting } from './interfaces'
+import { Octokit } from 'octokit';
+import { Display } from 'electron/main';
+
+declare const SETTINGS_WEBPACK_ENTRY: string;
+declare const SETTINGS_PRELOAD_WEBPACK_ENTRY: string;
+
+declare const BLOCKER_PRELOAD_WEBPACK_ENTRY: string;
 
 class Core {
-    constructor() {
-        this.settingsWindow = null
-        this.tray = null
-        this.blockerWindows = []
-    }
+
+    private settingsWindow: BrowserWindow = null
+    private tray: Tray = null
+    private octokit: Octokit = null
+    private windows: BrowserWindow[] = []
+    private scheduler: unknown = null
 
     async init() {
         await this.setupStorage()
@@ -19,7 +28,7 @@ class Core {
 
     setupTray() {
 
-        this.tray = new Tray(path.join(__dirname, 'pause.png'));
+        this.tray = new Tray(path.join(__dirname, 'assets', 'pause.png'));
 
         const menu = Menu.buildFromTemplate([
             {
@@ -56,6 +65,7 @@ class Core {
     setupIpc() {
 
         ipcMain.handle('close', async (e) => {
+            // @ts-ignore
             e.sender.destroy()
         })
 
@@ -94,7 +104,7 @@ class Core {
         return settings
     }
 
-    async saveSchedulerSettings(settings) {
+    async saveSchedulerSettings(settings: Record<string, unknown>) {
 
         await this.setSetting({ key: 'scheduler', data: settings })
         return settings
@@ -102,7 +112,7 @@ class Core {
 
     async unblock() {
 
-        for (const window of this.blockerWindows) {
+        for (const window of this.windows) {
 
             if (!window.isDestroyed()) {
                 window.destroy()
@@ -119,12 +129,12 @@ class Core {
         const displays = screen.getAllDisplays()
 
         for (const display of displays) {
-            const window = this.openBlockerWindow({ display })
-            this.blockerWindows.push(window)
+            const window = await this.openBlockerWindow({ display })
+            this.windows.push(window)
         }
     }
 
-    async openBlockerWindow({ display }) {
+    async openBlockerWindow({ display }: { display: Display }) {
 
         const window = new BrowserWindow({
             ...display.bounds,
@@ -159,7 +169,7 @@ class Core {
             })
         }
 
-        const repo = await this.octokit.rest.repos.downloadArchive({ owner: `cesarvarela`, repo: `stahp-default` })
+        const repo = await this.octokit.rest.repos.downloadArchive({ owner: `cesarvarela`, repo: `stahp-default`, ref: 'master' })
         //TODO: unzip and stuff here
     }
 
@@ -174,7 +184,7 @@ class Core {
             this.settingsWindow = new BrowserWindow({
                 width: 800,
                 height: 600,
-                icon: path.join(__dirname, 'pause.png'),
+                icon: path.join(__dirname, 'assets', 'pause.png'),
                 webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: true,
@@ -193,26 +203,26 @@ class Core {
         }
     }
 
-    async setSetting({ key, data }) {
+    async setSetting<T extends unknown>({ key, data }: { key: string, data: T }): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
 
-            storage.set(key, data, (err) => {
+            storage.set(key, data as never, (err: Error) => {
                 if (err) {
                     reject(err)
                 }
                 else {
-                    resolve()
+                    resolve(true)
                 }
             })
         })
     }
 
-    async hasSetting({ key }) {
+    async hasSetting({ key }: ISetting): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
 
-            storage.has(key, (err, hasKey) => {
+            storage.has(key, (err: Error, hasKey: boolean) => {
                 if (err) {
                     reject(err)
                 }
@@ -223,11 +233,11 @@ class Core {
         })
     }
 
-    async getSetting({ key }) {
+    async getSetting<T extends unknown>({ key }: ISetting): Promise<T> {
 
         return new Promise((resolve, reject) => {
 
-            storage.get(key, (err, data) => {
+            storage.get(key, (err: Error, data: never) => {
                 if (err) {
                     reject(err)
                 }

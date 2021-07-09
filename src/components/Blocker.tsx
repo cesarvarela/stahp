@@ -6,8 +6,6 @@ export default function Blocker() {
 
     window.onbeforeunload = useCallback((e) => {
 
-        console.log('can close', canClose)
-
         return canClose
     }, [canClose])
 
