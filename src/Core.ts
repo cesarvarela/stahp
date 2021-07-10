@@ -100,6 +100,10 @@ class Core {
         ipcMain.handle('close', async (e) => {
             // @ts-ignore
             e.sender.destroy()
+
+            if (this.windows.every(w => w.isDestroyed())) {
+                this.activity.skipLongBreak()
+            }
         })
 
         ipcMain.handle('openDevTools', async (e) => {
@@ -157,11 +161,8 @@ class Core {
             },
         });
 
-        window.webContents.openDevTools()
-
         window.loadFile(path.resolve(app.getAppPath(), 'themes', 'default', 'index.html'))
-
-        // window.setAlwaysOnTop(true, "screen-saver")
+        window.setAlwaysOnTop(true, "screen-saver")
 
         //TODO: https://github.com/electron/electron/issues/10862
         setTimeout(() => window.setBounds(display.bounds), 0);

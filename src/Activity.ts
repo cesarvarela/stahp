@@ -3,13 +3,13 @@ import { IActivitySettings } from "./interfaces";
 import Settings from "./Settings";
 
 enum State {
-    track,
-    break,
+    tracking,
+    breaking,
 }
 
 export default class Activity {
 
-    private state: State = State.track
+    private state: State = State.tracking
     private settings: Settings = null
 
     private countIddleTime: boolean = false
@@ -69,6 +69,9 @@ export default class Activity {
     }
 
     skipLongBreak = () => {
+
+        console.log('skip long break')
+
         clearInterval(this.longBreakInterval)
         this.onSkipLongBreak()
         this.track()
@@ -77,7 +80,8 @@ export default class Activity {
     takeLongBreak = () => {
 
         console.log('long break')
-
+        
+        this.state = State.breaking
         this.longBreakTime = 0
         this.onTakeLongBreak()
 
@@ -99,9 +103,10 @@ export default class Activity {
     }
 
     track = () => {
-
+        
         console.log('tracking')
-
+        
+        this.state = State.tracking
         this.activeTime = 0
         this.activeInterval = setInterval(async () => {
 
