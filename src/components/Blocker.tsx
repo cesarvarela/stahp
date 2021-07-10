@@ -11,7 +11,7 @@ export default function Blocker() {
 
     const onClose = () => {
 
-        window.stahp.close()
+        window.stahpblocker.close()
 
         setCanClose(true)
         window.close()

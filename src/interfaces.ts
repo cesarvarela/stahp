@@ -20,12 +20,17 @@ interface IActivitySettings {
 }
 
 interface IStahp {
-    close: () => Promise<void>,
-    saveSchedulerSettings: (settings: IScheduleSettings) => Promise<void>,
+    saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
-    block: () => Promise<void>,
-    unblock: () => Promise<void>,
     takeLongBreak: () => Promise<void>,
 }
 
-export { ISetting, IStahp, ISchedule, IScheduleSettings, IActivitySettings }
+interface IStahpBlocker {
+    close: () => Promise<void>,
+    skipLongBreak: () => Promise<void>,
+    openDevTools: () => Promise<void>,
+    getLongBreakTime: () => Promise<number>,
+    getLongBreakTargetTime: () => Promise<number>,
+}
+
+export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings }

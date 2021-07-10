@@ -53,7 +53,7 @@ class Core {
                 this.unblock()
             },
             () => {
-                
+
                 this.unblock()
             }
         )
@@ -100,6 +100,11 @@ class Core {
         ipcMain.handle('close', async (e) => {
             // @ts-ignore
             e.sender.destroy()
+        })
+
+        ipcMain.handle('openDevTools', async (e) => {
+
+            e.sender.openDevTools()
         })
 
         ipcMain.handle('block', async (e) => {

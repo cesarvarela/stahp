@@ -1,9 +1,12 @@
 import { ipcRenderer, contextBridge } from "electron";
+import { IStahpBlocker } from "../../interfaces";
 
-contextBridge.exposeInMainWorld("stahp", {
+const api: IStahpBlocker = {
     close: () => ipcRenderer.invoke('close'),
-    unblock: () => ipcRenderer.invoke('unblock'),
+    openDevTools: () => ipcRenderer.invoke('openDevTools'),
     getLongBreakTime: () => ipcRenderer.invoke('getLongBreakTime'),
     getLongBreakTargetTime: () => ipcRenderer.invoke('getLongBreakTargetTime'),
     skipLongBreak: () => ipcRenderer.invoke('skipLongBreak'),
-});
+}
+
+contextBridge.exposeInMainWorld("stahpblocker", api);

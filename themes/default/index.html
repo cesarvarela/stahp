@@ -9,7 +9,7 @@
 
         setInterval(async () => {
 
-            const time = await stahp.getLongBreakTime();
+            const time = await stahpblocker.getLongBreakTargetTime() - await stahpblocker.getLongBreakTime();
             document.getElementById('left').innerHTML = `${time}`
 
         }, 1000);
@@ -20,8 +20,9 @@
 <body>
     <h1>💖 Disconnect for a moment.. everything will still be there!</h1>
     <img src="image.jpeg" />
-    <button onclick="stahp.close()">Close only this window</button>
-    <button onclick="stahp.skipLongBreak()">Unblock</button>
+    <button onclick="stahpblocker.close()">Close only this window</button>
+    <button onclick="stahpblocker.skipLongBreak()">Skip Break</button>
+    <button onclick="stahpblocker.openDevTools()">dev tools</button>
     <div id="left">0</div>
 </body>
 
