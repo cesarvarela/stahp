@@ -1,7 +1,7 @@
 import React from "react";
 import { Main, Button } from "grommet";
 
-const { block, unblock } = window.stahp;
+const { takeLongBreak } = window.stahp;
 
 export default function Activity() {
   return (
@@ -13,7 +13,7 @@ export default function Activity() {
       justify="start"
       align="stretch"
     >
-      <Button onClick={() => block()}>Test Block</Button>
+      <Button onClick={() => takeLongBreak()}>Take long break</Button>
     </Main>
   );
 }

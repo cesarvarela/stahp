@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld("stahp", {
     getSchedulerSettings: () => ipcRenderer.invoke('getSchedulerSettings'),
     block: () => ipcRenderer.invoke('block'),
     unblock: () => ipcRenderer.invoke('unblock'),
+    takeLongBreak: () => ipcRenderer.invoke('takeLongBreak'),
 });

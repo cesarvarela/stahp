@@ -1,4 +1,5 @@
-import { powerMonitor, powerSaveBlocker } from "electron";
+import { ipcMain, powerMonitor, powerSaveBlocker } from "electron";
+import { IActivitySettings } from "./interfaces";
 import Settings from "./Settings";
 
 enum State {
@@ -23,14 +24,17 @@ export default class Activity {
     private longBreakTargetTime: number = 0
     private onTakeLongBreak: () => void = null
     private onFinishLongBreak: () => void = null
+    private onSkipLongBreak: () => void = null
 
     constructor(
         onTakeLongBreak: () => void,
         onFinishLongBreak: () => void,
+        onSkipLongBreak: () => void,
     ) {
 
         this.onTakeLongBreak = onTakeLongBreak
         this.onFinishLongBreak = onFinishLongBreak
+        this.onSkipLongBreak = onSkipLongBreak
 
         this.activeTargetTime = 10
         this.longBreakTargetTime = 5
@@ -40,11 +44,30 @@ export default class Activity {
     async setup() {
         //TODO: does this work on windows?
         powerSaveBlocker.start('prevent-app-suspension')
+
         this.settings = new Settings()
+
+        if (!await this.settings.hasSetting({ key: 'activity' })) {
+
+            await this.settings.setSetting<IActivitySettings>({
+                key: 'activity',
+                data:
+                {
+                    activeTargetTime: 45 * 60,
+                    longBreakTargetTime: 5 * 60,
+                }
+            })
+        }
+
+        ipcMain.handle('takeLongBreak', () => this.takeLongBreak())
+        ipcMain.handle('skipLongBreak', () => this.skipLongBreak())
+        ipcMain.handle('getLongBreakTime', () => this.longBreakTime)
+        ipcMain.handle('getLongBreakTargetTime', () => this.longBreakTargetTime)
     }
 
     skipLongBreak = () => {
         clearInterval(this.longBreakInterval)
+        this.onSkipLongBreak()
         this.track()
     }
 
@@ -53,7 +76,6 @@ export default class Activity {
         console.log('long break')
 
         this.longBreakTime = 0
-        
         this.onTakeLongBreak()
 
         this.longBreakInterval = setInterval(() => {
@@ -78,7 +100,6 @@ export default class Activity {
         console.log('tracking')
 
         this.activeTime = 0
-
         this.activeInterval = setInterval(async () => {
 
             if (this.countIddleTime) {

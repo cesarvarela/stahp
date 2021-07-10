@@ -51,7 +51,12 @@ class Core {
             }, () => {
 
                 this.unblock()
-            })
+            },
+            () => {
+                
+                this.unblock()
+            }
+        )
 
         this.activity.setup()
     }
@@ -112,9 +117,9 @@ class Core {
 
         for (const window of this.windows) {
 
-            await fadeWindowOut(window)
-
             if (!window.isDestroyed()) {
+
+                await fadeWindowOut(window)
                 window.destroy()
             }
         }
@@ -147,9 +152,11 @@ class Core {
             },
         });
 
+        window.webContents.openDevTools()
+
         window.loadFile(path.resolve(app.getAppPath(), 'themes', 'default', 'index.html'))
 
-        window.setAlwaysOnTop(true, "screen-saver")
+        // window.setAlwaysOnTop(true, "screen-saver")
 
         //TODO: https://github.com/electron/electron/issues/10862
         setTimeout(() => window.setBounds(display.bounds), 0);

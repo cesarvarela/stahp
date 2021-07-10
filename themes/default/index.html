@@ -5,13 +5,24 @@
     <meta charset="UTF-8">
     <title>holis!</title>
 
+    <script>
+
+        setInterval(async () => {
+
+            const time = await stahp.getLongBreakTime();
+            document.getElementById('left').innerHTML = `${time}`
+
+        }, 1000);
+    </script>
+
 </head>
 
 <body>
     <h1>💖 Disconnect for a moment.. everything will still be there!</h1>
     <img src="image.jpeg" />
-    <button onclick="stahp.close()">Close</button>
-    <button onclick="stahp.unblock()">Unblock</button>
+    <button onclick="stahp.close()">Close only this window</button>
+    <button onclick="stahp.skipLongBreak()">Unblock</button>
+    <div id="left">0</div>
 </body>
 
 </html>

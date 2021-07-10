@@ -1,24 +1,24 @@
 import { BrowserWindow } from "electron";
 
 const fadeWindowOut = (
-    browserWindowToFadeOut: BrowserWindow,
+    window: BrowserWindow,
     step = 0.1,
     fadeEveryXSeconds = 10
 ) => {
 
     return new Promise((resolve) => {
 
-        let opacity = browserWindowToFadeOut.getOpacity();
+        let opacity = window.getOpacity();
 
         const interval = setInterval(() => {
 
-            if (opacity <= 0) {
+            if (opacity <= 0 || !window || window.isDestroyed()) {
 
                 clearInterval(interval);
                 resolve(interval)
             }
 
-            browserWindowToFadeOut.setOpacity(opacity);
+            window.setOpacity(opacity);
             opacity -= step;
         }, fadeEveryXSeconds);
 
@@ -26,24 +26,24 @@ const fadeWindowOut = (
 }
 
 const fadeWindowIn = (
-    browserWindowToFadeIn: BrowserWindow,
+    window: BrowserWindow,
     step = 0.1,
     fadeEveryXSeconds = 10
 ) => {
 
     return new Promise((resolve) => {
 
-        let opacity = browserWindowToFadeIn.getOpacity();
+        let opacity = window.getOpacity();
 
         const interval = setInterval(() => {
 
-            if (opacity >= 1) {
+            if (opacity >= 1 || !window || window.isDestroyed()) {
 
                 clearInterval(interval);
                 resolve(interval);
             }
 
-            browserWindowToFadeIn.setOpacity(opacity);
+            window.setOpacity(opacity);
             opacity += step;
         }, fadeEveryXSeconds);
 
