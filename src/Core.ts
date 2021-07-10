@@ -1,10 +1,11 @@
 import { Tray, Menu, app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import path from 'path'
 import storage from 'electron-json-storage'
-import { Octokit } from 'octokit';
 import { Display } from 'electron/main';
 import Activity from './Activity';
 import Settings from './Settings';
+import Scheduler from './Scheduler';
+import Themes from './Themes';
 
 declare const SETTINGS_WEBPACK_ENTRY: string;
 declare const SETTINGS_PRELOAD_WEBPACK_ENTRY: string;
@@ -15,26 +16,37 @@ class Core {
 
     private settingsWindow: BrowserWindow = null
     private tray: Tray = null
-    private octokit: Octokit = null
     private windows: BrowserWindow[] = []
-    private scheduler: unknown = null
+    private scheduler: Scheduler = null
     private activity: Activity = null
     private settings: Settings = null
+    private themes: Themes = null
 
     async init() {
-        await this.setupStorage()
         await this.setupTray()
         await this.setupIpc()
         await this.openSettingsWindow()
+
         await this.setupScheduler()
         await this.setupActivity()
+        await this.setupThemes()
+    }
+
+    setupScheduler() {
+
+        this.scheduler = new Scheduler()
+        this.scheduler.setup()
     }
 
     setupActivity() {
 
         this.activity = new Activity()
-
         this.activity.track()
+    }
+
+    setupThemes() {
+        this.themes = new Themes()
+        this.themes.setup()
     }
 
     setupTray() {
@@ -66,61 +78,12 @@ class Core {
         this.tray.setContextMenu(menu)
     }
 
-    async setupStorage() {
-
-        this.settings = new Settings()
-
-        if (!await this.settings.hasSetting({ key: 'scheduler' })) {
-            await this.settings.setSetting({ key: 'scheduler', data: { schedules: [] } })
-        }
-    }
-
     setupIpc() {
 
         ipcMain.handle('close', async (e) => {
             // @ts-ignore
             e.sender.destroy()
         })
-
-        ipcMain.handle('saveSchedulerSettings', (_, settings) => this.saveSchedulerSettings(settings))
-        ipcMain.handle('getSchedulerSettings', () => this.getSchedulerSettings())
-    }
-
-    async setupScheduler() {
-
-        this.scheduler = require('node-schedule')
-    }
-
-    async loadScheduler() {
-
-        const schedules = await this.getSchedulerSettings()
-
-        //TODO: create schedules in node-schedule
-
-        // const { cron, type, theme } = {}
-        // this.scheduler.scheduleJob(`${type}:${theme}`, cron, () => {
-
-        //     if (type === 'block') {
-
-        //         if (!this.blockerWindows.length) {
-
-        //             this.block()
-        //         }
-        //     }
-        // })
-    }
-
-    async getSchedulerSettings() {
-
-        const settings = await this.settings.getSetting({ key: 'scheduler' })
-
-        return settings
-    }
-
-    async saveSchedulerSettings(settings: Record<string, unknown>) {
-
-        await this.settings.setSetting({ key: 'scheduler', data: settings })
-        return settings
     }
 
     async unblock() {
@@ -169,21 +132,6 @@ class Core {
         setTimeout(() => window.setBounds(display.bounds), 0);
 
         return window
-    }
-
-    async downloadTheme() {
-
-        if (!this.octokit) {
-
-            const { Octokit } = require('octokit')
-
-            this.octokit = new Octokit({
-                userAgent: 'stahp/v0.1',
-            })
-        }
-
-        const repo = await this.octokit.rest.repos.downloadArchive({ owner: `cesarvarela`, repo: `stahp-default`, ref: 'master' })
-        //TODO: unzip and stuff here
     }
 
     async openSettingsWindow() {
