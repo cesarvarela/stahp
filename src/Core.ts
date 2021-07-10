@@ -1,9 +1,10 @@
 import { Tray, Menu, app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import path from 'path'
 import storage from 'electron-json-storage'
-import { ISetting } from './interfaces'
 import { Octokit } from 'octokit';
 import { Display } from 'electron/main';
+import Activity from './Activity';
+import Settings from './Settings';
 
 declare const SETTINGS_WEBPACK_ENTRY: string;
 declare const SETTINGS_PRELOAD_WEBPACK_ENTRY: string;
@@ -17,6 +18,8 @@ class Core {
     private octokit: Octokit = null
     private windows: BrowserWindow[] = []
     private scheduler: unknown = null
+    private activity: Activity = null
+    private settings: Settings = null
 
     async init() {
         await this.setupStorage()
@@ -24,6 +27,14 @@ class Core {
         await this.setupIpc()
         await this.openSettingsWindow()
         await this.setupScheduler()
+        await this.setupActivity()
+    }
+
+    setupActivity() {
+
+        this.activity = new Activity()
+
+        this.activity.track()
     }
 
     setupTray() {
@@ -57,8 +68,10 @@ class Core {
 
     async setupStorage() {
 
-        if (!await this.hasSetting({ key: 'scheduler' })) {
-            await this.setSetting({ key: 'scheduler', data: { schedules: [] } })
+        this.settings = new Settings()
+
+        if (!await this.settings.hasSetting({ key: 'scheduler' })) {
+            await this.settings.setSetting({ key: 'scheduler', data: { schedules: [] } })
         }
     }
 
@@ -99,14 +112,14 @@ class Core {
 
     async getSchedulerSettings() {
 
-        const settings = await this.getSetting({ key: 'scheduler' })
+        const settings = await this.settings.getSetting({ key: 'scheduler' })
 
         return settings
     }
 
     async saveSchedulerSettings(settings: Record<string, unknown>) {
 
-        await this.setSetting({ key: 'scheduler', data: settings })
+        await this.settings.setSetting({ key: 'scheduler', data: settings })
         return settings
     }
 
@@ -202,52 +215,6 @@ class Core {
             }
         }
     }
-
-    async setSetting<T extends unknown>({ key, data }: { key: string, data: T }): Promise<boolean> {
-
-        return new Promise((resolve, reject) => {
-
-            storage.set(key, data as never, (err: Error) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve(true)
-                }
-            })
-        })
-    }
-
-    async hasSetting({ key }: ISetting): Promise<boolean> {
-
-        return new Promise((resolve, reject) => {
-
-            storage.has(key, (err: Error, hasKey: boolean) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve(hasKey)
-                }
-            })
-        })
-    }
-
-    async getSetting<T extends unknown>({ key }: ISetting): Promise<T> {
-
-        return new Promise((resolve, reject) => {
-
-            storage.get(key, (err: Error, data: never) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve(data)
-                }
-            })
-        })
-    }
-
 }
 
 export default Core
