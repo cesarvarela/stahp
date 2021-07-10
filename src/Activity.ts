@@ -36,8 +36,6 @@ export default class Activity {
         this.onFinishLongBreak = onFinishLongBreak
         this.onSkipLongBreak = onSkipLongBreak
 
-        this.activeTargetTime = 10
-        this.longBreakTargetTime = 5
         this.countIddleTime = true
     }
 
@@ -58,6 +56,11 @@ export default class Activity {
                 }
             })
         }
+
+        const settings = await this.settings.getSetting<IActivitySettings>({ key: 'activity' })
+
+        this.activeTargetTime = settings.activeTargetTime
+        this.longBreakTargetTime = settings.longBreakTargetTime
 
         ipcMain.handle('takeLongBreak', () => this.takeLongBreak())
         ipcMain.handle('skipLongBreak', () => this.skipLongBreak())
