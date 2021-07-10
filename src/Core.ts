@@ -30,6 +30,8 @@ class Core {
         await this.setupScheduler()
         await this.setupActivity()
         await this.setupThemes()
+
+        this.activity.track()
     }
 
     setupScheduler() {
@@ -40,8 +42,17 @@ class Core {
 
     setupActivity() {
 
-        this.activity = new Activity()
-        this.activity.track()
+        this.activity = new Activity(
+            () => {
+
+                this.block()
+
+            }, () => {
+
+                this.unblock()
+            })
+
+        this.activity.setup()
     }
 
     setupThemes() {
@@ -84,6 +95,16 @@ class Core {
             // @ts-ignore
             e.sender.destroy()
         })
+
+        ipcMain.handle('block', async (e) => {
+
+            this.block()
+        })
+
+        ipcMain.handle('unblock', async (e) => {
+
+            this.unblock()
+        })
     }
 
     async unblock() {
@@ -116,6 +137,7 @@ class Core {
             ...display.bounds,
             frame: false,
             skipTaskbar: true,
+            enableLargerThanScreen: true,
             webPreferences: {
                 preload: BLOCKER_PRELOAD_WEBPACK_ENTRY
             },

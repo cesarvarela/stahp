@@ -21,17 +21,25 @@ export default class Activity {
     private longBreakInterval: NodeJS.Timer = null
     private longBreakTime: number = 0
     private longBreakTargetTime: number = 0
+    private onTakeLongBreak: () => void = null
+    private onFinishLongBreak: () => void = null
 
-    constructor() {
+    constructor(
+        onTakeLongBreak: () => void,
+        onFinishLongBreak: () => void,
+    ) {
 
-        powerSaveBlocker.start('prevent-app-suspension')
+        this.onTakeLongBreak = onTakeLongBreak
+        this.onFinishLongBreak = onFinishLongBreak
 
         this.activeTargetTime = 10
-
         this.longBreakTargetTime = 5
-
         this.countIddleTime = true
+    }
 
+    async setup() {
+        //TODO: does this work on windows?
+        powerSaveBlocker.start('prevent-app-suspension')
         this.settings = new Settings()
     }
 
@@ -45,6 +53,8 @@ export default class Activity {
         console.log('long break')
 
         this.longBreakTime = 0
+        
+        this.onTakeLongBreak()
 
         this.longBreakInterval = setInterval(() => {
 
@@ -53,6 +63,8 @@ export default class Activity {
             console.log('long break time:', this.longBreakTime)
 
             if (this.longBreakTime >= this.longBreakTargetTime) {
+
+                this.onFinishLongBreak()
 
                 clearInterval(this.longBreakInterval)
                 this.track()

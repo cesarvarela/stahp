@@ -1,6 +1,6 @@
-import { ipcRenderer, contextBridge, screen } from "electron";
+import { ipcRenderer, contextBridge } from "electron";
 
 contextBridge.exposeInMainWorld("stahp", {
     close: () => ipcRenderer.invoke('close'),
-    closeAll: () => ipcRenderer.invoke('closeAll'),
+    unblock: () => ipcRenderer.invoke('unblock'),
 });
