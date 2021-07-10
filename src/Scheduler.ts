@@ -1,18 +1,15 @@
 import { ipcMain } from "electron";
+import { IScheduleSettings } from "./interfaces";
 import Settings from "./Settings";
 
 export default class Scheduler {
 
     private scheduler: unknown = null
-    private settings: Settings = null
+    private settings: Settings<IScheduleSettings> = null
 
     async setup() {
-        this.settings = new Settings()
+        this.settings = new Settings<IScheduleSettings>('scheduler', { schedules: [] })
         this.scheduler = require('node-schedule')
-
-        if (!await this.settings.hasSetting({ key: 'scheduler' })) {
-            await this.settings.setSetting({ key: 'scheduler', data: { schedules: [] } })
-        }
 
         ipcMain.handle('saveSchedulerSettings', (_, settings) => this.saveSchedulerSettings(settings))
         ipcMain.handle('getSchedulerSettings', () => this.getSchedulerSettings())
@@ -39,14 +36,14 @@ export default class Scheduler {
 
     async getSchedulerSettings() {
 
-        const settings = await this.settings.getSetting({ key: 'scheduler' })
+        const settings = await this.settings.get()
 
         return settings
     }
 
-    async saveSchedulerSettings(settings: Record<string, unknown>) {
+    async saveSchedulerSettings(settings: IScheduleSettings) {
 
-        await this.settings.setSetting({ key: 'scheduler', data: settings })
+        await this.settings.set(settings)
         return settings
     }
 }

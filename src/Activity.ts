@@ -10,7 +10,7 @@ enum State {
 export default class Activity {
 
     private state: State = State.tracking
-    private settings: Settings = null
+    private settings: Settings<IActivitySettings> = null
 
     private countIddleTime: boolean = false
 
@@ -43,21 +43,12 @@ export default class Activity {
         //TODO: does this work on windows?
         powerSaveBlocker.start('prevent-app-suspension')
 
-        this.settings = new Settings()
+        this.settings = new Settings<IActivitySettings>('activity', {
+            activeTargetTime: 45 * 60,
+            longBreakTargetTime: 5 * 60,
+        })
 
-        if (!await this.settings.hasSetting({ key: 'activity' })) {
-
-            await this.settings.setSetting<IActivitySettings>({
-                key: 'activity',
-                data:
-                {
-                    activeTargetTime: 45 * 60,
-                    longBreakTargetTime: 5 * 60,
-                }
-            })
-        }
-
-        const settings = await this.settings.getSetting<IActivitySettings>({ key: 'activity' })
+        const settings = await this.settings.get()
 
         this.activeTargetTime = settings.activeTargetTime
         this.longBreakTargetTime = settings.longBreakTargetTime
@@ -80,7 +71,7 @@ export default class Activity {
     takeLongBreak = () => {
 
         console.log('long break')
-        
+
         this.state = State.breaking
         this.longBreakTime = 0
         this.onTakeLongBreak()
@@ -103,9 +94,9 @@ export default class Activity {
     }
 
     track = () => {
-        
+
         console.log('tracking')
-        
+
         this.state = State.tracking
         this.activeTime = 0
         this.activeInterval = setInterval(async () => {

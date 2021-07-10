@@ -3,7 +3,6 @@ import path from 'path'
 import storage from 'electron-json-storage'
 import { Display } from 'electron/main';
 import Activity from './Activity';
-import Settings from './Settings';
 import Scheduler from './Scheduler';
 import Themes from './Themes';
 import { fadeWindowIn, fadeWindowOut } from './Fade';
@@ -20,7 +19,6 @@ class Core {
     private windows: BrowserWindow[] = []
     private scheduler: Scheduler = null
     private activity: Activity = null
-    private settings: Settings = null
     private themes: Themes = null
 
     async init() {

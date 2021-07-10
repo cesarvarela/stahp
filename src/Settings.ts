@@ -1,48 +1,40 @@
 import storage from 'electron-json-storage'
-import { ISetting } from './interfaces'
 
-class Settings {
+class Settings<T extends Record<string, unknown>> {
 
-    async setSetting<T extends unknown>({ key, data }: { key: string, data: T }): Promise<boolean> {
+    private key: string = null
+    private defaults: T = {} as T
 
-        return new Promise((resolve, reject) => {
-
-            storage.set(key, data as never, (err: Error) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve(true)
-                }
-            })
-        })
+    constructor(key: string, defaults: T) {
+        this.key = key
+        this.defaults = defaults
     }
 
-    async hasSetting({ key }: ISetting): Promise<boolean> {
+    async set(data: T): Promise<T> {
 
         return new Promise((resolve, reject) => {
 
-            storage.has(key, (err: Error, hasKey: boolean) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve(hasKey)
-                }
-            })
-        })
-    }
-
-    async getSetting<T extends unknown>({ key }: ISetting): Promise<T> {
-
-        return new Promise((resolve, reject) => {
-
-            storage.get(key, (err: Error, data: never) => {
+            storage.set(this.key, { ...this.defaults, ...data as T }, (err: Error) => {
                 if (err) {
                     reject(err)
                 }
                 else {
                     resolve(data)
+                }
+            })
+        })
+    }
+
+    async get(): Promise<T> {
+
+        return new Promise((resolve, reject) => {
+
+            storage.get(this.key, (err: Error, data: any) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    resolve({ ...this.defaults, ...data })
                 }
             })
         })

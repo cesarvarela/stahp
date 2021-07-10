@@ -10,11 +10,11 @@ interface ISchedule {
     minutes: string,
 }
 
-interface IScheduleSettings {
+interface IScheduleSettings extends Record<string, unknown> {
     schedules: ISchedule[]
 }
 
-interface IActivitySettings {
+interface IActivitySettings extends Record<string, unknown> {
     longBreakTargetTime: number
     activeTargetTime: number
 }
