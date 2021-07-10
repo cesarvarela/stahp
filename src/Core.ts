@@ -6,6 +6,7 @@ import Activity from './Activity';
 import Settings from './Settings';
 import Scheduler from './Scheduler';
 import Themes from './Themes';
+import { fadeWindowIn, fadeWindowOut } from './Fade';
 
 declare const SETTINGS_WEBPACK_ENTRY: string;
 declare const SETTINGS_PRELOAD_WEBPACK_ENTRY: string;
@@ -31,7 +32,7 @@ class Core {
         await this.setupActivity()
         await this.setupThemes()
 
-        this.activity.track()
+        // this.activity.track()
     }
 
     setupScheduler() {
@@ -111,6 +112,8 @@ class Core {
 
         for (const window of this.windows) {
 
+            await fadeWindowOut(window)
+
             if (!window.isDestroyed()) {
                 window.destroy()
             }
@@ -138,6 +141,7 @@ class Core {
             frame: false,
             skipTaskbar: true,
             enableLargerThanScreen: true,
+            opacity: 0,
             webPreferences: {
                 preload: BLOCKER_PRELOAD_WEBPACK_ENTRY
             },
@@ -152,6 +156,8 @@ class Core {
         setTimeout(() => window.setBounds(display.bounds), 0);
         setTimeout(() => window.setBounds(display.bounds), 0);
         setTimeout(() => window.setBounds(display.bounds), 0);
+
+        await fadeWindowIn(window)
 
         return window
     }
