@@ -117,8 +117,6 @@ function TimeLeft() {
       const targetTime = await getActiveTargetTime();
       const time = await getActiveTime();
 
-      console.log(time);
-
       setLeft(targetTime - time);
     }, 1000);
 
@@ -189,7 +187,11 @@ export default function Activity() {
             pad="small"
             background={{ color: "active" }}
           >
-            <TimeLeft />
+            {settings.enabled ? (
+              <TimeLeft />
+            ) : (
+              <Text>Long breaks disabled</Text>
+            )}
           </CardFooter>
         </Card>
       )}
