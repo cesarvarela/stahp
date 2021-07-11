@@ -129,7 +129,7 @@ function TimeLeft() {
   }, [getActiveTargetTime, getActiveTime]);
 
   return (
-    <Text>
+    <Text size="small">
       {formatDuration(
         { seconds },
         { zero: true, format: ["hours", "minutes", "seconds"] }
