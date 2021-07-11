@@ -23,10 +23,15 @@ interface IActivitySettings extends Record<string, unknown> {
 interface IStahp {
     saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
-    takeLongBreak: () => Promise<void>,
 
+    takeLongBreak: () => Promise<void>,
+    getLongBreakTime: () => Promise<number>,
+    getLongBreakTargetTime: () => Promise<number>,
     setActivitySettings: (settings: IActivitySettings) => Promise<IActivitySettings>,
     getActivitySettings: () => Promise<IActivitySettings>,
+
+    getActiveTargetTime: () => Promise<number>,
+    getActiveTime: () => Promise<number>,
 }
 
 interface IStahpBlocker {

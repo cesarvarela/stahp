@@ -56,8 +56,13 @@ export default class Activity {
 
         ipcMain.handle('takeLongBreak', () => this.takeLongBreak())
         ipcMain.handle('skipLongBreak', () => this.skipLongBreak())
+
         ipcMain.handle('getLongBreakTime', () => this.longBreakTime)
         ipcMain.handle('getLongBreakTargetTime', () => this.longBreakTargetTime)
+
+        ipcMain.handle('getActiveTargetTime', () => this.activeTargetTime)
+        ipcMain.handle('getActiveTime', () => this.activeTime)
+
         ipcMain.handle('getActivitySettings', () => { return this.settings.get() })
         ipcMain.handle('setActivitySettings', async (_, settings: IActivitySettings) => {
 
@@ -68,7 +73,7 @@ export default class Activity {
         })
 
         if (settings.enabled) {
-            
+
             this.track()
         }
     }

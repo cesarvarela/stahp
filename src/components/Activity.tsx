@@ -9,16 +9,24 @@ import {
   CheckBox,
   Spinner,
   Form,
+  Button,
+  CardFooter,
 } from "grommet";
 import { IActivitySettings } from "../interfaces";
 import styled from "styled-components";
+import { formatDuration } from "date-fns";
 
 const Select = styled(GrommetSelect)`
   width: 100px;
 `;
 
-const { takeLongBreak, getActivitySettings, setActivitySettings } =
-  window.stahp;
+const {
+  takeLongBreak,
+  getActivitySettings,
+  setActivitySettings,
+  getActiveTargetTime,
+  getActiveTime,
+} = window.stahp;
 
 const lengthOptions = [
   { label: "20 minutes", value: 20 * 60 },
@@ -53,65 +61,78 @@ function ActivityForm({
         setValue(nextValue);
       }}
     >
-      <Card background={{ color: "background" }}>
-        <CardHeader
+      <Box direction="row" align="center">
+        <Box
           align="center"
+          justify="center"
+          margin={{ right: "small" }}
           direction="row"
-          flex={false}
-          justify="between"
-          gap="medium"
-          pad="small"
         >
-          <Text size="small" weight="bold">
-            Activity breaks
-          </Text>
-        </CardHeader>
-        <CardBody pad="small" direction="row" align="center">
-          <Box
-            align="center"
-            justify="center"
-            margin={{ right: "small" }}
-            direction="row"
-          >
-            <CheckBox
-              toggle
-              checked={value.enabled}
-              onChange={() => setValue({ ...value, enabled: !value.enabled })}
-            />
-          </Box>
-          <Text margin={{ right: "small" }}>Take a long break</Text>
-          <Select
-            options={lengthOptions}
-            labelKey="label"
-            valueKey={{ key: "value", reduce: true }}
-            size="small"
-            value={[value.activeTargetTime]}
-            margin={{ right: "small" }}
-            onChange={(e) =>
-              setValue({
-                ...value,
-                activeTargetTime: parseInt(e.target.value),
-              })
-            }
+          <CheckBox
+            toggle
+            checked={value.enabled}
+            onChange={() => setValue({ ...value, enabled: !value.enabled })}
           />
-          <Text margin={{ left: "small", right: "small" }}>for</Text>
-          <Select
-            options={forOptions}
-            labelKey="label"
-            valueKey={{ key: "value", reduce: true }}
-            size="small"
-            value={[value.longBreakTargetTime]}
-            margin={{ right: "small" }}
-            onChange={(e) =>
-              setValue({
-                ...value,
-                longBreakTargetTime: parseInt(e.target.value),
-              })
-            }
-          />
-        </CardBody>
-      </Card>
+        </Box>
+        <Text margin={{ right: "small" }}>Take a long break</Text>
+        <Select
+          options={lengthOptions}
+          labelKey="label"
+          valueKey={{ key: "value", reduce: true }}
+          size="small"
+          value={[value.activeTargetTime]}
+          margin={{ right: "small" }}
+          onChange={(e) =>
+            setValue({
+              ...value,
+              activeTargetTime: parseInt(e.target.value),
+            })
+          }
+        />
+        <Text margin={{ left: "small", right: "small" }}>for</Text>
+        <Select
+          options={forOptions}
+          labelKey="label"
+          valueKey={{ key: "value", reduce: true }}
+          size="small"
+          value={[value.longBreakTargetTime]}
+          margin={{ right: "small" }}
+          onChange={(e) =>
+            setValue({
+              ...value,
+              longBreakTargetTime: parseInt(e.target.value),
+            })
+          }
+        />
+      </Box>
     </Form>
+  );
+}
+
+function TimeLeft() {
+  const [seconds, setLeft] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const targetTime = await getActiveTargetTime();
+      const time = await getActiveTime();
+
+      console.log(time);
+
+      setLeft(targetTime - time);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [getActiveTargetTime, getActiveTime]);
+
+  return (
+    <Text>
+      {formatDuration(
+        { seconds },
+        { zero: true, format: ["hours", "minutes", "seconds"] }
+      )}{" "}
+      left until next break
+    </Text>
   );
 }
 
@@ -146,8 +167,40 @@ export default function Activity() {
           <Spinner size="medium" />
         </Box>
       ) : (
-        <ActivityForm value={settings} setValue={onChange} />
+        <Card background={{ color: "background" }}>
+          <CardHeader
+            align="center"
+            direction="row"
+            flex={false}
+            justify="between"
+            gap="medium"
+            pad="small"
+          >
+            <Text size="small" weight="bold">
+              Activity breaks
+            </Text>
+          </CardHeader>
+          <CardBody pad="small" direction="row" align="center">
+            <ActivityForm value={settings} setValue={onChange} />
+          </CardBody>
+          <CardFooter
+            align="center"
+            direction="row"
+            pad="small"
+            background={{ color: "active" }}
+          >
+            <TimeLeft />
+          </CardFooter>
+        </Card>
       )}
+      <Box
+        align="center"
+        justify="start"
+        direction="row"
+        margin={{ top: "medium" }}
+      >
+        <Button label="Take a long break now" onClick={() => takeLongBreak()} />
+      </Box>
     </Box>
   );
 }

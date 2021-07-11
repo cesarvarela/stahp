@@ -7,6 +7,12 @@ const api: IStahp = {
     takeLongBreak: () => ipcRenderer.invoke('takeLongBreak'),
     getActivitySettings: () => ipcRenderer.invoke('getActivitySettings'),
     setActivitySettings: (settings: IActivitySettings) => ipcRenderer.invoke('setActivitySettings', settings),
+
+    getLongBreakTime: () => ipcRenderer.invoke('getLongBreakTime'),
+    getLongBreakTargetTime: () => ipcRenderer.invoke('getLongBreakTargetTime'),
+
+    getActiveTargetTime: () => ipcRenderer.invoke('getActiveTargetTime'),
+    getActiveTime: () => ipcRenderer.invoke('getActiveTime'),
 }
 
 contextBridge.exposeInMainWorld("stahp", api);
