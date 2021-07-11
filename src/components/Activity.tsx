@@ -113,12 +113,16 @@ function TimeLeft() {
   const [seconds, setLeft] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const updateTime = async () => {
       const targetTime = await getActiveTargetTime();
       const time = await getActiveTime();
 
       setLeft(targetTime - time);
-    }, 1000);
+    };
+
+    updateTime();
+
+    const interval = setInterval(updateTime, 1000);
 
     return () => clearInterval(interval);
   }, [getActiveTargetTime, getActiveTime]);

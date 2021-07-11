@@ -6,8 +6,8 @@ interface ISetting {
 interface ISchedule {
     id?: string,
     days: string[],
-    hour: string,
-    minutes: string,
+    hour: number,
+    minutes: number,
 }
 
 interface IScheduleSettings extends Record<string, unknown> {

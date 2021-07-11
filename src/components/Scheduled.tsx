@@ -10,8 +10,8 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CheckBox,
   CardFooter,
+  Spinner,
 } from "grommet";
 import { Add, Trash } from "grommet-icons";
 import styled from "styled-components";
@@ -89,22 +89,22 @@ function Schedule({
             valueKey={{ key: "value", reduce: true }}
             options={hours}
             size="small"
-            value={value.hour}
+            value={[value.hour]}
             margin={{ right: "small" }}
-            onChange={(e) => onChange({ value: { ...value, hour: e.value } })}
+            onChange={(e) =>
+              onChange({ value: { ...value, hour: parseInt(e.value) } })
+            }
           />
           <TimeSelect
             labelKey="label"
             valueKey={{ key: "value", reduce: true }}
             options={minutes}
             size="small"
-            value={value.minutes}
+            value={[value.minutes]}
             onChange={(e) =>
-              onChange({ value: { ...value, minutes: e.value } })
+              onChange({ value: { ...value, minutes: parseInt(e.value) } })
             }
           />
-          <Text margin={{ right: "small", left: "small" }}>For</Text>
-          <Select options={["indefinitely", "option 2"]} size="small" />
         </Box>
       </CardBody>
       <CardFooter
@@ -116,8 +116,13 @@ function Schedule({
         pad="small"
         background={{ color: "active" }}
       >
-        <CheckBox label="Enabled" toggle />
-        <Button size="small" plain icon={<Trash />} onClick={onDelete} />
+        <Button
+          size="small"
+          label="Delete"
+          plain
+          icon={<Trash />}
+          onClick={onDelete}
+        />
       </CardFooter>
     </Card>
   );
@@ -131,9 +136,9 @@ function Schedules({
   value: ISchedule[];
 }) {
   const defaultSchedule: ISchedule = {
-    days: [],
-    hour: "",
-    minutes: "",
+    days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+    hour: 22,
+    minutes: 0,
   };
 
   const onAddClick = () => {
@@ -218,9 +223,7 @@ function ScheduleForm({
 }
 
 export default function Scheduled() {
-  const [settings, setSettings] = useState<IScheduleSettings>({
-    schedules: [],
-  });
+  const [settings, setSettings] = useState<IScheduleSettings>(null);
 
   useEffect(() => {
     async function load() {
@@ -234,7 +237,6 @@ export default function Scheduled() {
   const onChange = async (settings: IScheduleSettings) => {
     setSettings(settings);
     saveSchedulerSettings(settings);
-    console.log("submit", settings);
   };
 
   return (
@@ -244,7 +246,13 @@ export default function Scheduled() {
       direction="column"
       pad={{ top: "small" }}
     >
-      <ScheduleForm value={settings} setValue={onChange} />
+      {settings == null ? (
+        <Box align="center" justify="center" pad="large">
+          <Spinner size="medium" />
+        </Box>
+      ) : (
+        <ScheduleForm value={settings} setValue={onChange} />
+      )}
     </Box>
   );
 }

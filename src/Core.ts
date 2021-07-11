@@ -29,13 +29,16 @@ class Core {
         await this.setupScheduler()
         await this.setupActivity()
         await this.setupThemes()
-
-        // this.activity.track()
     }
 
     setupScheduler() {
 
-        this.scheduler = new Scheduler()
+        this.scheduler = new Scheduler(
+            () => {
+                this.block()
+            }
+        )
+
         this.scheduler.setup()
     }
 
