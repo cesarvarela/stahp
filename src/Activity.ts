@@ -58,7 +58,27 @@ export default class Activity {
         ipcMain.handle('getLongBreakTime', () => this.longBreakTime)
         ipcMain.handle('getLongBreakTargetTime', () => this.longBreakTargetTime)
         ipcMain.handle('getActivitySettings', () => { return this.settings.get() })
-        ipcMain.handle('setActivitySettings', (_, settings: IActivitySettings) => { return this.settings.set(settings) })
+        ipcMain.handle('setActivitySettings', async (_, settings: IActivitySettings) => {
+
+            const updated = await this.settings.set(settings)
+            this.restart()
+
+            return updated
+        })
+    }
+
+    async restart() {
+
+        const settings = await this.settings.get()
+
+        this.activeTargetTime = settings.activeTargetTime
+        this.longBreakTargetTime = settings.longBreakTargetTime
+
+        this.stop()
+
+        switch (this.state) {
+            case State.tracking: this.track()
+        }
     }
 
     skipLongBreak = () => {
