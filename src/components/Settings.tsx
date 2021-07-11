@@ -13,25 +13,17 @@ export default function Settings() {
         overflow="auto"
         align="stretch"
         flex="grow"
-        justify="start"
         direction="column"
+        justify="start"
+        pad="small"
+        round="small"
+        background={{ color: "background-back" }}
       >
-        <Header
-          align="center"
-          direction="row"
-          justify="start"
-          gap="medium"
-          fill="horizontal"
-          pad="medium"
-        >
-          <Text>Stahp</Text>
-        </Header>
-
-        <Tabs flex>
-          <Tab title="Activity" icon={<Clock />}>
+        <Tabs justify="start">
+          <Tab title="Activity">
             <Activity />
           </Tab>
-          <Tab title="Schedules" icon={<Schedules />}>
+          <Tab title="Schedule">
             <Scheduled />
           </Tab>
         </Tabs>

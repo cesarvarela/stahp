@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Main,
   Text,
   Form,
   FormField,
   Select,
   CheckBoxGroup,
   Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CheckBox,
+  CardFooter,
 } from "grommet";
 import { Add, Trash } from "grommet-icons";
 import styled from "styled-components";
@@ -15,35 +19,18 @@ import { ISchedule, IScheduleSettings } from "../interfaces";
 
 const { saveSchedulerSettings, getSchedulerSettings } = window.stahp;
 
-const Label = styled(Text)`
-  width: 140px;
-  text-align: left;
-`;
-
 const TimeSelect = styled(Select)`
-  width: 80px;
-`;
-const ScheduleBox = styled(Box)`
-  position: relative;
-  & > .trash {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  &:hover > .trash {
-    display: block;
-  }
+  width: 40px;
 `;
 
 const days = [
-  { label: "M", value: "monday" },
-  { label: "T", value: "tuesday" },
-  { label: "W", value: "wednesday" },
-  { label: "T", value: "thursday" },
-  { label: "F", value: "friday" },
-  { label: "S", value: "saturday" },
-  { label: "S", value: "sunday" },
+  { label: "Mon", value: "monday" },
+  { label: "Tue", value: "tuesday" },
+  { label: "Wed", value: "wednesday" },
+  { label: "Thu", value: "thursday" },
+  { label: "Fri", value: "friday" },
+  { label: "Sat", value: "saturday" },
+  { label: "Sun", value: "sunday" },
 ];
 
 const hours = [...Array(24).keys()].map((n) => ({
@@ -59,29 +46,33 @@ function Schedule({
   value,
   onChange,
   onDelete,
+  index,
 }: {
   value: ISchedule;
   onChange: (value: unknown) => void;
   onDelete: () => void;
+  index: number;
 }) {
   return (
-    <ScheduleBox
-      align="start"
-      justify="start"
-      round="small"
-      background={{ color: "light-1" }}
-      fill="horizontal"
-      margin="small"
+    <Card
+      background={{ color: "background" }}
+      margin={{ top: index > 0 ? "small" : undefined }}
     >
-      <Box
+      <CardHeader
         align="center"
-        justify="between"
         direction="row"
-        flex="grow"
-        margin="medium"
+        flex={false}
+        justify="between"
+        gap="medium"
+        pad="small"
       >
-        <Label>Days</Label>
-        <FormField>
+        <Text size="small" weight="bold">
+          Scheduled Break
+        </Text>
+      </CardHeader>
+      <CardBody pad="xsmall" align="start">
+        <Box align="center" justify="center" direction="row" pad="small">
+          <Text margin={{ right: "small" }}>Take a break every</Text>
           <CheckBoxGroup
             options={days}
             direction="row"
@@ -90,41 +81,45 @@ function Schedule({
             value={value.days}
             onChange={(e) => onChange({ value: { ...value, days: e.value } })}
           />
-        </FormField>
-      </Box>
-      <Box
-        align="start"
-        justify="between"
-        direction="row"
-        flex="grow"
-        margin="medium"
-      >
-        <Label>Time</Label>
-        <FormField>
+        </Box>
+        <Box align="center" justify="center" pad="small" direction="row">
+          <Text margin={{ right: "small" }}>At</Text>
           <TimeSelect
             labelKey="label"
             valueKey={{ key: "value", reduce: true }}
             options={hours}
-            size="medium"
+            size="small"
             value={value.hour}
+            margin={{ right: "small" }}
             onChange={(e) => onChange({ value: { ...value, hour: e.value } })}
           />
-        </FormField>
-        <FormField>
           <TimeSelect
             labelKey="label"
             valueKey={{ key: "value", reduce: true }}
             options={minutes}
-            size="medium"
+            size="small"
             value={value.minutes}
             onChange={(e) =>
               onChange({ value: { ...value, minutes: e.value } })
             }
           />
-        </FormField>
-      </Box>
-      <Button className="trash" icon={<Trash />} plain onClick={onDelete} />
-    </ScheduleBox>
+          <Text margin={{ right: "small", left: "small" }}>For</Text>
+          <Select options={["indefinitely", "option 2"]} size="small" />
+        </Box>
+      </CardBody>
+      <CardFooter
+        align="center"
+        direction="row"
+        flex={false}
+        justify="between"
+        gap="medium"
+        pad="small"
+        background={{ color: "active" }}
+      >
+        <CheckBox label="Enabled" toggle />
+        <Button size="small" plain icon={<Trash />} onClick={onDelete} />
+      </CardFooter>
+    </Card>
   );
 }
 
@@ -161,17 +156,45 @@ function Schedules({
   };
 
   return (
-    <Box margin="medium" justify="start" align="start">
-      {value.map((v) => (
-        <Schedule
-          key={v.id}
-          value={v}
-          onChange={onScheduleChange}
-          onDelete={() => onDeleteSchedule(v)}
-        />
-      ))}
-      <Button icon={<Add />} onClick={onAddClick} label="Add Scheduled break" />
-    </Box>
+    <>
+      <Box>
+        {value.map((v, i) => (
+          <Schedule
+            index={i}
+            key={v.id}
+            value={v}
+            onChange={onScheduleChange}
+            onDelete={() => onDeleteSchedule(v)}
+          />
+        ))}
+      </Box>
+
+      {value.length > 0 ? (
+        <Box align="center" justify="center" pad="medium">
+          <Button label="Add another scheduled break" onClick={onAddClick} />
+        </Box>
+      ) : (
+        <Box
+          align="center"
+          justify="center"
+          pad="large"
+          background={{ color: "active" }}
+          round="small"
+          direction="row"
+          hoverIndicator="background"
+          style={{ cursor: "pointer" }}
+          onClick={onAddClick}
+        >
+          <Box align="center" justify="center" pad="medium">
+            <Button icon={<Add />} plain size="large" />
+          </Box>
+          <Text>
+            Click here to add a scheduled break that repeats daily/weekly and at
+            specific time.
+          </Text>
+        </Box>
+      )}
+    </>
   );
 }
 
@@ -215,15 +238,13 @@ export default function Scheduled() {
   };
 
   return (
-    <Main
-      fill="vertical"
-      overflow="auto"
-      flex
-      direction="column"
-      justify="start"
+    <Box
       align="stretch"
+      justify="center"
+      direction="column"
+      pad={{ top: "small" }}
     >
       <ScheduleForm value={settings} setValue={onChange} />
-    </Main>
+    </Box>
   );
 }

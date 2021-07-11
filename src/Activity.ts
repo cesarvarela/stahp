@@ -57,6 +57,8 @@ export default class Activity {
         ipcMain.handle('skipLongBreak', () => this.skipLongBreak())
         ipcMain.handle('getLongBreakTime', () => this.longBreakTime)
         ipcMain.handle('getLongBreakTargetTime', () => this.longBreakTargetTime)
+        ipcMain.handle('getActivitySettings', () => { return this.settings.get() })
+        ipcMain.handle('setActivitySettings', (_, settings: IActivitySettings) => { return this.settings.set(settings) })
     }
 
     skipLongBreak = () => {

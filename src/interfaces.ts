@@ -23,6 +23,9 @@ interface IStahp {
     saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
     takeLongBreak: () => Promise<void>,
+
+    setActivitySettings: (settings: IActivitySettings) => Promise<IActivitySettings>,
+    getActivitySettings: () => Promise<IActivitySettings>,
 }
 
 interface IStahpBlocker {
