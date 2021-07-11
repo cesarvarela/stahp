@@ -46,6 +46,7 @@ export default class Activity {
         this.settings = new Settings<IActivitySettings>('activity', {
             activeTargetTime: 45 * 60,
             longBreakTargetTime: 5 * 60,
+            enabled: true,
         })
 
         const settings = await this.settings.get()
@@ -65,6 +66,11 @@ export default class Activity {
 
             return updated
         })
+
+        if (settings.enabled) {
+            
+            this.track()
+        }
     }
 
     async restart() {
@@ -76,8 +82,10 @@ export default class Activity {
 
         this.stop()
 
-        switch (this.state) {
-            case State.tracking: this.track()
+        if (settings.enabled) {
+            switch (this.state) {
+                case State.tracking: this.track()
+            }
         }
     }
 
@@ -102,7 +110,7 @@ export default class Activity {
 
             this.longBreakTime += 1
 
-            console.log('long break time:', this.longBreakTime)
+            console.log('long break time:', this.longBreakTargetTime - this.longBreakTime)
 
             if (this.longBreakTime >= this.longBreakTargetTime) {
 
@@ -135,7 +143,7 @@ export default class Activity {
                 }
             }
 
-            console.log('active time:', this.activeTime)
+            console.log('active time:', this.activeTargetTime - this.activeTime)
 
             if (this.activeTime >= this.activeTargetTime) {
                 this.takeLongBreak()

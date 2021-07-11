@@ -5,12 +5,17 @@ import {
   Text,
   CardBody,
   Box,
-  Select,
+  Select as GrommetSelect,
   CheckBox,
   Spinner,
   Form,
 } from "grommet";
 import { IActivitySettings } from "../interfaces";
+import styled from "styled-components";
+
+const Select = styled(GrommetSelect)`
+  width: 100px;
+`;
 
 const { takeLongBreak, getActivitySettings, setActivitySettings } =
   window.stahp;
@@ -68,7 +73,11 @@ function ActivityForm({
             margin={{ right: "small" }}
             direction="row"
           >
-            <CheckBox toggle />
+            <CheckBox
+              toggle
+              checked={value.enabled}
+              onChange={() => setValue({ ...value, enabled: !value.enabled })}
+            />
           </Box>
           <Text margin={{ right: "small" }}>Take a long break</Text>
           <Select

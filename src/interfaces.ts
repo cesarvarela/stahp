@@ -17,6 +17,7 @@ interface IScheduleSettings extends Record<string, unknown> {
 interface IActivitySettings extends Record<string, unknown> {
     longBreakTargetTime: number
     activeTargetTime: number
+    enabled: boolean
 }
 
 interface IStahp {
