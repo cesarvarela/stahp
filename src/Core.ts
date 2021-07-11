@@ -31,37 +31,6 @@ class Core {
         await this.setupThemes()
     }
 
-    setupScheduler() {
-
-        this.scheduler = new Scheduler(
-            () => {
-                this.block()
-            }
-        )
-
-        this.scheduler.setup()
-    }
-
-    setupActivity() {
-
-        this.activity = new Activity(
-            () => {
-
-                this.block()
-
-            }, () => {
-
-                this.unblock()
-            },
-            () => {
-
-                this.unblock()
-            }
-        )
-
-        this.activity.setup()
-    }
-
     setupThemes() {
         this.themes = new Themes()
         this.themes.setup()
@@ -96,6 +65,37 @@ class Core {
         this.tray.setContextMenu(menu)
     }
 
+    setupScheduler() {
+
+        this.scheduler = new Scheduler(
+            () => {
+
+                this.activity.stop()
+                this.block()
+            }
+        )
+
+        this.scheduler.setup()
+    }
+
+    setupActivity() {
+
+        this.activity = new Activity(
+            () => {
+
+                this.activity.takeLongBreak()
+                this.block()
+
+            }, () => {
+
+                this.activity.start()
+                this.unblock()
+            },
+        )
+
+        this.activity.setup()
+    }
+
     setupIpc() {
 
         ipcMain.handle('close', async (e) => {
@@ -103,23 +103,35 @@ class Core {
             e.sender.destroy()
 
             if (this.windows.every(w => w.isDestroyed())) {
-                this.activity.skipLongBreak()
+                this.activity.stop()
+                this.activity.start()
             }
+        })
+
+        ipcMain.handle('takeLongBreak', () => {
+
+            this.block()
+            this.activity.takeLongBreak()
+        })
+
+        ipcMain.handle('skipBreak', async () => {
+
+            this.activity.stop()
+            this.activity.start()
+
+            this.unblock()
+        })
+
+        ipcMain.handle('takeIndefiniteBreak', () => {
+
+            this.activity.stop()
+
+            this.block()
         })
 
         ipcMain.handle('openDevTools', async (e) => {
 
             e.sender.openDevTools()
-        })
-
-        ipcMain.handle('block', async (e) => {
-
-            this.block()
-        })
-
-        ipcMain.handle('unblock', async (e) => {
-
-            this.unblock()
         })
     }
 

@@ -32,15 +32,10 @@ export default class Scheduler {
         ipcMain.handle('getSchedulerSettings', () => this.settings.get())
         ipcMain.handle('saveSchedulerSettings', async (_, settings: IScheduleSettings) => {
             await this.settings.set(settings)
-            this.restart()
+            this.stop()
+            this.start()
         })
 
-        this.start()
-    }
-
-    async restart() {
-
-        this.stop()
         this.start()
     }
 

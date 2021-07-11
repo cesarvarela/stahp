@@ -17,24 +17,21 @@ export default class Activity {
     private activeInterval: NodeJS.Timer = null
     private activeTime: number = 0
     private activeTargetTime: number = 0
-
+    private enabled: boolean = null
 
     private longBreakInterval: NodeJS.Timer = null
     private longBreakTime: number = 0
     private longBreakTargetTime: number = 0
-    private onTakeLongBreak: () => void = null
+    private onFinishActivity: () => void = null
     private onFinishLongBreak: () => void = null
-    private onSkipLongBreak: () => void = null
 
     constructor(
-        onTakeLongBreak: () => void,
+        onFinishActivity: () => void,
         onFinishLongBreak: () => void,
-        onSkipLongBreak: () => void,
     ) {
 
-        this.onTakeLongBreak = onTakeLongBreak
+        this.onFinishActivity = onFinishActivity
         this.onFinishLongBreak = onFinishLongBreak
-        this.onSkipLongBreak = onSkipLongBreak
 
         this.countIddleTime = true
     }
@@ -53,9 +50,7 @@ export default class Activity {
 
         this.activeTargetTime = settings.activeTargetTime
         this.longBreakTargetTime = settings.longBreakTargetTime
-
-        ipcMain.handle('takeLongBreak', () => this.takeLongBreak())
-        ipcMain.handle('skipLongBreak', () => this.skipLongBreak())
+        this.enabled = settings.enabled
 
         ipcMain.handle('getLongBreakTime', () => this.longBreakTime)
         ipcMain.handle('getLongBreakTargetTime', () => this.longBreakTargetTime)
@@ -67,49 +62,35 @@ export default class Activity {
         ipcMain.handle('setActivitySettings', async (_, settings: IActivitySettings) => {
 
             const updated = await this.settings.set(settings)
-            this.restart()
+
+            this.activeTargetTime = updated.activeTargetTime
+            this.longBreakTargetTime = updated.longBreakTargetTime
+            this.enabled = updated.enabled
+
+            if (updated.enabled) {
+                
+                this.start()
+            } else {
+
+                this.stop()
+            }
 
             return updated
         })
 
         if (settings.enabled) {
 
-            this.track()
+            this.start()
         }
-    }
-
-    async restart() {
-
-        const settings = await this.settings.get()
-
-        this.activeTargetTime = settings.activeTargetTime
-        this.longBreakTargetTime = settings.longBreakTargetTime
-
-        this.stop()
-
-        if (settings.enabled) {
-            switch (this.state) {
-                case State.tracking: this.track()
-            }
-        }
-    }
-
-    skipLongBreak = () => {
-
-        console.log('skip long break')
-
-        clearInterval(this.longBreakInterval)
-        this.onSkipLongBreak()
-        this.track()
     }
 
     takeLongBreak = () => {
 
         console.log('long break')
 
+        this.clearIntervals()
         this.state = State.breaking
         this.longBreakTime = 0
-        this.onTakeLongBreak()
 
         this.longBreakInterval = setInterval(() => {
 
@@ -119,49 +100,63 @@ export default class Activity {
 
             if (this.longBreakTime >= this.longBreakTargetTime) {
 
-                this.onFinishLongBreak()
-
                 clearInterval(this.longBreakInterval)
-                this.track()
+                this.onFinishLongBreak()
             }
 
         }, 1000)
     }
 
-    track = () => {
+    start = () => {
 
-        console.log('tracking')
+        if (this.enabled) {
 
-        this.state = State.tracking
-        this.activeTime = 0
-        this.activeInterval = setInterval(async () => {
+            console.log('tracking')
 
-            if (this.countIddleTime) {
-                this.activeTime += 1
-            }
-            else {
+            this.clearIntervals()
+            this.state = State.tracking
+            this.activeTime = 0
+            this.activeInterval = setInterval(async () => {
 
-                const iddleTime = await powerMonitor.getSystemIdleTime()
-
-                if (iddleTime < 1) {
+                if (this.countIddleTime) {
                     this.activeTime += 1
                 }
-            }
+                else {
 
-            console.log('active time:', this.activeTargetTime - this.activeTime)
+                    const iddleTime = await powerMonitor.getSystemIdleTime()
 
-            if (this.activeTime >= this.activeTargetTime) {
-                this.takeLongBreak()
-                clearInterval(this.activeInterval)
-            }
+                    if (iddleTime < 1) {
+                        this.activeTime += 1
+                    }
+                }
 
-        }, 1000)
+                console.log('active time:', this.activeTargetTime - this.activeTime)
+
+                if (this.activeTime >= this.activeTargetTime) {
+
+                    clearInterval(this.activeInterval)
+                    this.onFinishActivity()
+                }
+
+            }, 1000)
+        }
+        else {
+
+            console.log('do not start because module is disabled')
+        }
+    }
+
+    private clearIntervals = () => {
+
+        clearInterval(this.activeInterval)
+        clearInterval(this.longBreakInterval)
+        this.activeInterval = null
+        this.longBreakInterval = null
     }
 
     stop = () => {
-        clearInterval(this.activeInterval)
-        clearInterval(this.longBreakInterval)
 
+        this.clearIntervals()
         this.activeTime = 0
         this.longBreakTime = 0
     }

@@ -21,6 +21,7 @@ const Select = styled(GrommetSelect)`
 `;
 
 const {
+  takeIndefiniteBreak,
   takeLongBreak,
   getActivitySettings,
   setActivitySettings,
@@ -204,8 +205,13 @@ export default function Activity() {
         justify="start"
         direction="row"
         margin={{ top: "medium" }}
+        gap="small"
       >
         <Button label="Take a long break now" onClick={() => takeLongBreak()} />
+        <Button
+          label="Take an indefinite break now"
+          onClick={() => takeIndefiniteBreak()}
+        />
       </Box>
     </Box>
   );

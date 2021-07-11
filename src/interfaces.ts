@@ -24,6 +24,8 @@ interface IStahp {
     saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
 
+    takeIndefiniteBreak: () => Promise<any>,
+
     takeLongBreak: () => Promise<void>,
     getLongBreakTime: () => Promise<number>,
     getLongBreakTargetTime: () => Promise<number>,
@@ -36,7 +38,7 @@ interface IStahp {
 
 interface IStahpBlocker {
     close: () => Promise<void>,
-    skipLongBreak: () => Promise<void>,
+    skipBreak: () => Promise<void>,
     openDevTools: () => Promise<void>,
     getLongBreakTime: () => Promise<number>,
     getLongBreakTargetTime: () => Promise<number>,
