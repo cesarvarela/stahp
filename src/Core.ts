@@ -1,4 +1,4 @@
-import { Tray, Menu, app, BrowserWindow, ipcMain, screen, shell } from 'electron'
+import { Tray, Menu, app, BrowserWindow, ipcMain, screen, shell, nativeTheme } from 'electron'
 import path from 'path'
 import storage from 'electron-json-storage'
 import { Display } from 'electron/main';
@@ -39,7 +39,7 @@ class Core {
 
     setupTray() {
 
-        this.tray = new Tray(path.join(__dirname, 'assets', 'pause.png'));
+        this.tray = new Tray(path.join(__dirname, 'assets', nativeTheme.shouldUseDarkColors ? 'icon-white@2x.png' : 'icon-black@2x.png'));
 
         const menu = Menu.buildFromTemplate([
             {
