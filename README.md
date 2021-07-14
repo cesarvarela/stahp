@@ -3,9 +3,9 @@
 </p>
 
 <div align="center">
-  <h1>STAHP ✋ </h1>
+  <h1>stahp ✋ </h1>
   <p>
-  Stahp aims to be (WIP at the moment) a user contributed break time reminder. Inspiread by Eyleo.
+  Stahp aims to be (WIP at the moment) a user contributed break time reminder. Inspiread by Eyeleo.
   </P>
 </div>
 
