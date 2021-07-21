@@ -1,9 +1,9 @@
 import React from "react";
-import { Grommet, Box, Header, Text, Tabs, Tab } from "grommet";
+import { Grommet, Box, Tabs, Tab } from "grommet";
 import Scheduled from "./Scheduled";
 import Activity from "./Activity";
 import theme from "../theme";
-import { Clock, Schedules } from "grommet-icons";
+import Themes from "./Themes";
 
 export default function Settings() {
   return (
@@ -25,6 +25,9 @@ export default function Settings() {
           </Tab>
           <Tab title="Schedule">
             <Scheduled />
+          </Tab>
+          <Tab title="Themes">
+            <Themes />
           </Tab>
         </Tabs>
       </Box>

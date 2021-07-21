@@ -6320,6 +6320,16 @@ sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
+stahp-theme-default@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/stahp-theme-default/-/stahp-theme-default-1.0.1.tgz#a295170735cb7a8954c73411f101de7766e748fb"
+  integrity sha512-cJWUMDJndCCax+tM/hO6AdkY4orDufSSTLdhl8MJGl7JuxfXjmYupT3cuvMzPG+pE8asMTNAaEL8nw6s/jwIjg==
+  dependencies:
+    grommet "^2.17.3"
+    react "^17.0.2"
+    react-dom "^17.0.2"
+    styled-components "^5.3.0"
+
 "statuses@>= 1.4.0 < 2", "statuses@>= 1.5.0 < 2", statuses@~1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"

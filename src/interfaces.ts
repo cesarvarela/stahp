@@ -25,8 +25,8 @@ interface IStahp {
     getSchedulerSettings: () => Promise<IScheduleSettings>,
 
     takeIndefiniteBreak: () => Promise<any>,
+    takeLongBreak: (dev?: boolean) => Promise<void>,
 
-    takeLongBreak: () => Promise<void>,
     getLongBreakTime: () => Promise<number>,
     getLongBreakTargetTime: () => Promise<number>,
     setActivitySettings: (settings: IActivitySettings) => Promise<IActivitySettings>,

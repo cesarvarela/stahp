@@ -109,9 +109,9 @@ class Core {
             }
         })
 
-        ipcMain.handle('takeLongBreak', () => {
+        ipcMain.handle('takeLongBreak', (_, dev: boolean = false) => {
 
-            this.block()
+            this.block(dev)
             this.activity.takeLongBreak()
         })
 
@@ -151,14 +151,14 @@ class Core {
         this.windows = []
     }
 
-    async block() {
+    async block(dev: boolean = false) {
 
         await this.unblock()
 
         const displays = screen.getAllDisplays()
 
         for (const display of displays) {
-            const window = await this.openBlockerWindow({ display })
+            const window = await this.openBlockerWindow({ display, dev })
             this.windows.push(window)
         }
     }
@@ -203,11 +203,11 @@ class Core {
         return window
     }
 
-    async openBlockerWindow({ display }: { display: Display }) {
+    async openBlockerWindow({ display, dev }: { display: Display, dev: boolean }) {
 
         const window = new BrowserWindow({
             ...display.bounds,
-            frame: false,
+            frame: dev,
             skipTaskbar: true,
             enableLargerThanScreen: true,
             opacity: 0,
@@ -216,14 +216,17 @@ class Core {
             },
         });
 
-        window.loadFile(path.resolve(app.getAppPath(), 'themes', 'default', 'long.html'))
-        window.setAlwaysOnTop(true, "screen-saver")
+        window.loadFile(path.join(__dirname, 'themes', 'default', 'long.html'))
 
-        //TODO: https://github.com/electron/electron/issues/10862
-        setTimeout(() => window.setBounds(display.bounds), 0);
-        setTimeout(() => window.setBounds(display.bounds), 0);
-        setTimeout(() => window.setBounds(display.bounds), 0);
-        setTimeout(() => window.setBounds(display.bounds), 0);
+        if (!dev) {
+
+            window.setAlwaysOnTop(true, "screen-saver")
+            //TODO: https://github.com/electron/electron/issues/10862
+            setTimeout(() => window.setBounds(display.bounds), 0);
+            setTimeout(() => window.setBounds(display.bounds), 0);
+            setTimeout(() => window.setBounds(display.bounds), 0);
+            setTimeout(() => window.setBounds(display.bounds), 0);
+        }
 
         await fadeWindowIn(window)
 

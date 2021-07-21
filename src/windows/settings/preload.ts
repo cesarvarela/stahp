@@ -7,7 +7,7 @@ const api: IStahp = {
 
     takeIndefiniteBreak: () => ipcRenderer.invoke('takeIndefiniteBreak'),
 
-    takeLongBreak: () => ipcRenderer.invoke('takeLongBreak'),
+    takeLongBreak: (dev) => ipcRenderer.invoke('takeLongBreak', dev),
     getActivitySettings: () => ipcRenderer.invoke('getActivitySettings'),
     setActivitySettings: (settings: IActivitySettings) => ipcRenderer.invoke('setActivitySettings', settings),
 
