@@ -1,4 +1,4 @@
-import storage from 'electron-json-storage'
+import storage from './storage'
 
 class Settings<T extends Record<string, unknown>> {
 
@@ -10,34 +10,34 @@ class Settings<T extends Record<string, unknown>> {
         this.defaults = defaults
     }
 
+    static async create<Y extends Record<string, unknown>>(key: string, defaults: Y): Promise<[Settings<Y>, Y]> {
+
+        const instance = new Settings(key, defaults)
+        const values = await instance.load()
+
+        return [instance, values]
+    }
+
+    private async load() {
+
+        let value = {}
+
+        if (await storage.has(this.key)) {
+
+            value = await storage.get(this.key)
+        }
+
+        return storage.set(this.key, { ...this.defaults, ...value })
+    }
+
     async set(data: T): Promise<T> {
 
-        return new Promise((resolve, reject) => {
-
-            storage.set(this.key, { ...this.defaults, ...data as T }, (err: Error) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve(data)
-                }
-            })
-        })
+        return storage.set(this.key, data)
     }
 
     async get(): Promise<T> {
 
-        return new Promise((resolve, reject) => {
-
-            storage.get(this.key, (err: Error, data: any) => {
-                if (err) {
-                    reject(err)
-                }
-                else {
-                    resolve({ ...this.defaults, ...data })
-                }
-            })
-        })
+        return storage.get(this.key)
     }
 }
 
