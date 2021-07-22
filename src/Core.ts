@@ -253,6 +253,7 @@ class Core {
                 width: 800,
                 height: 600,
                 icon: path.join(__dirname, 'assets', 'pause.png'),
+                backgroundColor: nativeTheme.shouldUseDarkColors ? '#333' : '#ddd',
                 webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: true,

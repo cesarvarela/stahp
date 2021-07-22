@@ -20,10 +20,8 @@ interface IActivitySettings extends Record<string, unknown> {
     enabled: boolean
 }
 
-type Theme = "light" | "dark";
-
 interface IGeneralSettings extends Record<string, unknown> {
-    theme: Theme
+    theme: "light" | "dark"
 }
 
 interface IStahp {
@@ -40,6 +38,8 @@ interface IStahp {
 
     getActiveTargetTime: () => Promise<number>,
     getActiveTime: () => Promise<number>,
+
+    getGeneralSettings: () => Promise<IGeneralSettings>,
 }
 
 interface IStahpBlocker {
@@ -50,4 +50,4 @@ interface IStahpBlocker {
     getLongBreakTargetTime: () => Promise<number>,
 }
 
-export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, Theme }
+export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings }

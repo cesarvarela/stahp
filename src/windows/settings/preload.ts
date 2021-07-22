@@ -16,6 +16,8 @@ const api: IStahp = {
 
     getActiveTargetTime: () => ipcRenderer.invoke('getActiveTargetTime'),
     getActiveTime: () => ipcRenderer.invoke('getActiveTime'),
+
+    getGeneralSettings: () => ipcRenderer.invoke('getGeneralSettings'),
 }
 
 contextBridge.exposeInMainWorld("stahp", api);

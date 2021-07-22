@@ -1,5 +1,5 @@
-import { nativeTheme } from "electron";
-import { IGeneralSettings, Theme } from "./interfaces";
+import { ipcMain, nativeTheme } from "electron";
+import { IGeneralSettings } from "./interfaces";
 import Settings from "./Settings";
 
 export default class General {
@@ -8,11 +8,14 @@ export default class General {
 
     async setup() {
 
-        const [instance, values] = await Settings.create<IGeneralSettings>('general', { theme: nativeTheme.shouldUseDarkColors ? "dark" : "light" })
+        const [instance] = await Settings.create<IGeneralSettings>('general', { theme: nativeTheme.shouldUseDarkColors ? "dark" : "light" })
 
         this.settings = instance
-        
-        console.log(values)
+
+        ipcMain.handle('getGeneralSettings', async () => {
+
+            return this.settings.get();
+        })
     }
 
     async toggleTheme() {

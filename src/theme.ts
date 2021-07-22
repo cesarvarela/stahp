@@ -1,5 +1,5 @@
 export default {
-    "name": "display-portals",
+    "name": "stahp",
     "rounding": 4,
     "spacing": 24,
     "defaultMode": "light",
