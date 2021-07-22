@@ -20,6 +20,12 @@ interface IActivitySettings extends Record<string, unknown> {
     enabled: boolean
 }
 
+type Theme = "light" | "dark";
+
+interface IGeneralSettings extends Record<string, unknown> {
+    theme: Theme
+}
+
 interface IStahp {
     saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
@@ -44,4 +50,4 @@ interface IStahpBlocker {
     getLongBreakTargetTime: () => Promise<number>,
 }
 
-export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings }
+export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, Theme }

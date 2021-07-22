@@ -5,6 +5,7 @@ import { Display } from 'electron/main';
 import Activity from './Activity';
 import Scheduler from './Scheduler';
 import Themes from './Themes';
+import General from './General';
 import { fadeWindowIn, fadeWindowOut } from './Fade';
 
 declare const SETTINGS_WEBPACK_ENTRY: string;
@@ -21,8 +22,10 @@ class Core {
     private scheduler: Scheduler = null
     private activity: Activity = null
     private themes: Themes = null
+    private General: General = null
 
     async init() {
+        await this.setupgGeneral()
         await this.setupTray()
         await this.setupIpc()
         await this.openSettingsWindow()
@@ -30,6 +33,11 @@ class Core {
         await this.setupScheduler()
         await this.setupActivity()
         await this.setupThemes()
+    }
+
+    setupgGeneral() {
+        this.General = new General()
+        this.General.setup()
     }
 
     setupThemes() {
