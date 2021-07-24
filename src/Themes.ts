@@ -32,7 +32,7 @@ export default class Themes {
         const settings = await this.settings.get()
         return settings.theme === 'default'
             ? path.join(__dirname, 'themes', 'default', 'long.html')
-            : throw new Error('Not implemented')
+            : 'Not implemented'
     }
 
     async downloadTheme() {
