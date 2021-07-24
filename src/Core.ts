@@ -11,6 +11,7 @@ import { fadeWindowIn, fadeWindowOut } from './Fade';
 declare const SETTINGS_WEBPACK_ENTRY: string;
 declare const SETTINGS_PRELOAD_WEBPACK_ENTRY: string;
 
+declare const BLOCKER_WEBPACK_ENTRY: string;
 declare const BLOCKER_PRELOAD_WEBPACK_ENTRY: string;
 
 class Core {
@@ -224,7 +225,8 @@ class Core {
             },
         });
 
-        window.loadFile(path.join(__dirname, 'themes', 'default', 'long.html'))
+        const file = await this.themes.getLongBreakURL()
+        window.loadFile(file)
 
         if (!dev) {
 

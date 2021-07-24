@@ -7,6 +7,8 @@ const api: IStahpBlocker = {
     getLongBreakTime: () => ipcRenderer.invoke('getLongBreakTime'),
     getLongBreakTargetTime: () => ipcRenderer.invoke('getLongBreakTargetTime'),
     skipBreak: () => ipcRenderer.invoke('skipBreak'),
+    getGeneralSettings: () => ipcRenderer.invoke('getGeneralSettings'),
+    getThemesSettings: () => ipcRenderer.invoke('getThemesSettings'),
 }
 
 contextBridge.exposeInMainWorld("stahpblocker", api);

@@ -24,6 +24,10 @@ interface IGeneralSettings extends Record<string, unknown> {
     theme: "light" | "dark"
 }
 
+interface IThemesSettings extends Record<string, unknown> {
+    theme: string,
+}
+
 interface IStahp {
     saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
@@ -48,6 +52,8 @@ interface IStahpBlocker {
     openDevTools: () => Promise<void>,
     getLongBreakTime: () => Promise<number>,
     getLongBreakTargetTime: () => Promise<number>,
+    getGeneralSettings: () => Promise<IGeneralSettings>,
+    getThemesSettings: () => Promise<IThemesSettings>,
 }
 
-export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings }
+export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, IThemesSettings }
