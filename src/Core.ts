@@ -220,15 +220,20 @@ class Core {
             skipTaskbar: true,
             enableLargerThanScreen: true,
             opacity: 0,
+            backgroundColor: nativeTheme.shouldUseDarkColors ? '#333' : '#ddd',
             webPreferences: {
                 preload: BLOCKER_PRELOAD_WEBPACK_ENTRY
             },
         });
 
-        const file = await this.themes.getLongBreakURL()
-        window.loadFile(file)
+        if (dev) {
 
-        if (!dev) {
+            window.loadURL('http://localhost:1234')
+
+        } else {
+
+            const file = await this.themes.getLongBreakURL()
+            window.loadFile(file)
 
             window.setAlwaysOnTop(true, "screen-saver")
             //TODO: https://github.com/electron/electron/issues/10862
@@ -237,6 +242,10 @@ class Core {
             setTimeout(() => window.setBounds(display.bounds), 0);
             setTimeout(() => window.setBounds(display.bounds), 0);
         }
+
+        await new Promise((resolve) => {
+            window.once('ready-to-show', resolve)
+        })
 
         await fadeWindowIn(window)
 
