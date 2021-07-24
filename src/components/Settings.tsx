@@ -10,6 +10,10 @@ const { stahp } = window;
 export default function Settings() {
   const [themeMode, setThemeMode] = useState<"light" | "dark" | undefined>();
 
+  const [activeTabIndex, setActiveTabIndex] = useState<number>(
+    parseInt(localStorage.getItem("activeTabIndex")) || 0
+  );
+
   useEffect(() => {
     async function load() {
       const settings = await stahp.getGeneralSettings();
@@ -18,6 +22,10 @@ export default function Settings() {
 
     load();
   }, [stahp]);
+
+  useEffect(() => {
+    localStorage.setItem("activeTabIndex", activeTabIndex.toString());
+  }, [activeTabIndex]);
 
   return (
     <Grommet
@@ -36,7 +44,11 @@ export default function Settings() {
         pad="small"
         round="small"
       >
-        <Tabs justify="start">
+        <Tabs
+          justify="start"
+          activeIndex={activeTabIndex}
+          onActive={(index) => setActiveTabIndex(index)}
+        >
           <Tab title="Activity">
             <Activity />
           </Tab>
