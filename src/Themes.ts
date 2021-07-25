@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain } from "electron"
 import path from 'path'
-import { IThemesSettings } from "./interfaces"
+import { IThemePackage, IThemesSettings } from "./interfaces"
 import Settings from "./Settings"
 import fetch from "node-fetch"
+import fs from 'fs'
 
 export default class Themes {
 
@@ -36,21 +37,18 @@ export default class Themes {
         })
     }
 
-    async search(query: string) {
+    async search(query: string): Promise<IThemePackage[]> {
 
         const libnpmsearch = require('libnpmsearch')
-
         const res = await libnpmsearch(`stahp-theme-${query}`)
         return res
     }
 
     async download(name: string) {
 
-        const fs = require('fs')
-
         try {
 
-            const themeFolder = path.join(app.getPath("userData"), 'themes', name)
+            const themeFolder = path.join(this.getThemesFolder(), name)
 
             if (!fs.existsSync(themeFolder)) {
                 fs.mkdirSync(themeFolder, { recursive: true })
@@ -64,6 +62,16 @@ export default class Themes {
 
             console.log(err)
         }
+    }
+
+    private getThemesFolder(): string {
+
+        return path.join(app.getPath("userData"), 'themes')
+    }
+
+    private async isDownloaded(name: string) {
+        const themeFolder = path.join(this.getThemesFolder(), name)
+        return fs.existsSync(themeFolder)
     }
 
     private async downloadPackage(name: string): Promise<string> {
@@ -86,15 +94,26 @@ export default class Themes {
 
         return new Promise((resolve, reject) => {
 
-            tar.x({ file: tarball, cwd: where, strip: 2 }, ['package/dist'], (err: any, files: any) => {
+            tar.x({
+                file: tarball, cwd: where, strip: 1, filter: (path: string) => {
 
-                if (err) {
-                    reject(err)
+                    if (path.startsWith('package/dist') || path === 'package/package.json') {
+
+                        return true
+                    }
+
+                    return false
                 }
-                else {
-                    resolve(files)
-                }
-            })
+            },
+                (err: any, files: any) => {
+
+                    if (err) {
+                        reject(err)
+                    }
+                    else {
+                        resolve(files)
+                    }
+                })
         })
     }
 

@@ -28,8 +28,15 @@ interface IThemesSettings extends Record<string, unknown> {
     theme: string,
 }
 
-interface Theme {
-    name: string,
+interface IThemePackage {
+    date: Date,
+    links: { npm: string }
+    maintainers: []
+    name: string
+    publisher: { username: string, email: string }
+    scope: string
+    version: string
+    downloaded: boolean
 }
 
 interface IStahp {
@@ -49,7 +56,7 @@ interface IStahp {
 
     getGeneralSettings: () => Promise<IGeneralSettings>,
 
-    searchThemes: (query: string) => Promise<Theme[]>,
+    searchThemes: (query: string) => Promise<IThemePackage[]>,
 
     downloadTheme: (name: string) => Promise<any>,
 }
@@ -64,4 +71,4 @@ interface IStahpBlocker {
     getThemesSettings: () => Promise<IThemesSettings>,
 }
 
-export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, IThemesSettings }
+export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, IThemesSettings, IThemePackage }
