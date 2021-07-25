@@ -16,11 +16,17 @@ import {
   DownloadOption,
   Search,
   StatusDisabled,
+  Trash,
 } from "grommet-icons";
 import { IThemePackage } from "../interfaces";
 
-const { takeLongBreak, searchThemes, downloadTheme, getDownloadedThemes } =
-  window.stahp;
+const {
+  takeLongBreak,
+  searchThemes,
+  downloadTheme,
+  getDownloadedThemes,
+  deleteTheme,
+} = window.stahp;
 
 export default function Themes() {
   const [results, setResults] = useState(null);
@@ -36,6 +42,25 @@ export default function Themes() {
 
     setResults(results);
     setSearching(false);
+  };
+
+  async function fetch() {
+    const downloaded = await getDownloadedThemes();
+    setDownloaded(downloaded);
+  }
+
+  const [downloaded, setDownloaded] = useState([]);
+
+  useEffect(() => {
+    fetch();
+  }, [getDownloadedThemes]);
+
+  const handleDelete = async (packg: IThemePackage) => {
+    
+    await deleteTheme(packg.name);
+
+    const downloaded = await getDownloadedThemes();
+    setDownloaded(downloaded);
   };
 
   const handleDownload = async (packg: IThemePackage) => {
@@ -58,21 +83,9 @@ export default function Themes() {
         r.map((r) => (r.name === packg.name ? { ...r, status: "error" } : r))
       );
     }
-  };
-
-  const [downloaded, setDownloaded] = useState([]);
-
-  useEffect(() => {
-    async function fetch() {
-      const downloaded = await getDownloadedThemes();
-
-      console.log(downloaded);
-
-      setDownloaded(downloaded);
-    }
 
     fetch();
-  }, [getDownloadedThemes]);
+  };
 
   return (
     <Box
@@ -220,16 +233,16 @@ export default function Themes() {
                   <Box align="center" justify="center">
                     {
                       {
-                        downloaded: <Checkmark />,
-                        available: (
+                        downloaded: (
                           <Button
                             plain
-                            icon={<DownloadOption />}
-                            onClick={() => handleDownload(datum)}
+                            icon={<Trash />}
+                            onClick={() => handleDelete(datum)}
                           />
                         ),
-                        downloading: <Spinner />,
-                        error: <StatusDisabled />,
+                        available: null,
+                        downloading: null,
+                        error: null,
                       }[datum.status]
                     }
                   </Box>

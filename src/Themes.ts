@@ -38,6 +38,12 @@ export default class Themes {
             const res = await this.download(name)
             return res
         })
+
+        ipcMain.handle('deleteTheme', async (_, name) => {
+
+            const res = await this.delete(name)
+            return res
+        })
     }
 
     async getDownloadedThemes(): Promise<IThemePackage[]> {
@@ -50,6 +56,8 @@ export default class Themes {
 
             const blob = await fs.readFile(path.join(themesFolder, dir.name, 'package.json'), 'utf8')
             const packageJson = JSON.parse(blob)
+
+            packageJson.status = 'downloaded'
 
             themes.push(packageJson)
         }
@@ -90,6 +98,20 @@ export default class Themes {
         }
 
         return result
+    }
+
+    async delete(name: string): Promise<boolean> {
+
+        try {
+
+            await fs.rmdir(path.join(this.getThemesFolder(), name), { recursive: true })
+        }
+        catch (e) {
+            console.log(e)
+            return false
+        }
+
+        return true
     }
 
     private getThemesFolder(): string {

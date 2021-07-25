@@ -59,6 +59,7 @@ interface IStahp {
     searchThemes: (query: string) => Promise<IThemePackage[]>,
     downloadTheme: (name: string) => Promise<IThemePackage>,
     getDownloadedThemes: () => Promise<IThemePackage[]>,
+    deleteTheme: (name: string) => Promise<boolean>,
 }
 
 interface IStahpBlocker {
