@@ -3,7 +3,7 @@ import path from 'path'
 import { IThemePackage, IThemesSettings } from "./interfaces"
 import Settings from "./Settings"
 import fetch from "node-fetch"
-import fs from 'fs'
+import { promises as fs, constants as FSCONSTANTS } from 'fs';
 
 export default class Themes {
 
@@ -40,28 +40,34 @@ export default class Themes {
     async search(query: string): Promise<IThemePackage[]> {
 
         const libnpmsearch = require('libnpmsearch')
-        const res = await libnpmsearch(`stahp-theme-${query}`)
-        return res
+        const results: IThemePackage[] = await libnpmsearch(`stahp-theme-${query}`)
+
+        for (const result of results) {
+
+            if (this.isDownloaded(result.name)) {
+                result.downloaded = await this.isDownloaded(result.name)
+            }
+        }
+
+        return results
     }
 
     async download(name: string) {
 
+        let result = null
+
         try {
 
             const themeFolder = path.join(this.getThemesFolder(), name)
-
-            if (!fs.existsSync(themeFolder)) {
-                fs.mkdirSync(themeFolder, { recursive: true })
-            }
-
             const tarballPath = await this.downloadPackage(name)
-
-            await this.extractPackage(tarballPath, themeFolder)
+            result = await this.extractPackage(tarballPath, themeFolder)
 
         } catch (err) {
 
             console.log(err)
         }
+
+        return result
     }
 
     private getThemesFolder(): string {
@@ -69,9 +75,21 @@ export default class Themes {
         return path.join(app.getPath("userData"), 'themes')
     }
 
-    private async isDownloaded(name: string) {
+    private async isDownloaded(name: string): Promise<boolean> {
+
         const themeFolder = path.join(this.getThemesFolder(), name)
-        return fs.existsSync(themeFolder)
+        let result = true
+
+        try {
+
+            await fs.access(themeFolder, FSCONSTANTS.F_OK)
+        }
+        catch {
+
+            result = false
+        }
+
+        return result
     }
 
     private async downloadPackage(name: string): Promise<string> {
