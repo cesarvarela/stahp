@@ -68,7 +68,7 @@ export default class Activity {
             this.enabled = updated.enabled
 
             if (updated.enabled) {
-                
+
                 this.start()
             } else {
 
@@ -84,7 +84,7 @@ export default class Activity {
         }
     }
 
-    takeLongBreak = () => {
+    longBreak = () => {
 
         console.log('long break')
 

@@ -93,7 +93,7 @@ class Core {
         this.activity = new Activity(
             () => {
 
-                this.activity.takeLongBreak()
+                this.activity.longBreak()
                 this.block()
 
             }, () => {
@@ -118,10 +118,10 @@ class Core {
             }
         })
 
-        ipcMain.handle('takeLongBreak', (_, dev: boolean = false) => {
+        ipcMain.handle('takeLongBreak', (_, { theme }: { theme?: string } = {}) => {
 
-            this.block(dev)
-            this.activity.takeLongBreak()
+            this.block({ theme })
+            this.activity.longBreak()
         })
 
         ipcMain.handle('skipBreak', async () => {
@@ -160,14 +160,14 @@ class Core {
         this.windows = []
     }
 
-    async block(dev: boolean = false) {
+    async block({ theme = null }: { theme?: string } = null) {
 
         await this.unblock()
 
         const displays = screen.getAllDisplays()
 
         for (const display of displays) {
-            const window = await this.openBlockerWindow({ display, dev })
+            const window = await this.openBlockerWindow({ display, theme })
             this.windows.push(window)
         }
     }
@@ -212,11 +212,11 @@ class Core {
         return window
     }
 
-    async openBlockerWindow({ display, dev }: { display: Display, dev: boolean }) {
+    async openBlockerWindow({ display, theme = null }: { display: Display, theme: string }) {
 
         const window = new BrowserWindow({
             ...display.bounds,
-            frame: dev,
+            frame: !!theme,
             skipTaskbar: true,
             enableLargerThanScreen: true,
             opacity: 0,
@@ -226,13 +226,14 @@ class Core {
             },
         });
 
-        if (dev) {
+        if (theme && theme == "development") {
 
             window.loadURL('http://localhost:1234')
 
         } else {
 
-            const file = await this.themes.getLongBreakURL()
+            const file = await this.themes.getLongBreakURL({ theme })
+
             window.loadFile(file)
 
             window.setAlwaysOnTop(true, "screen-saver")

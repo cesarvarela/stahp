@@ -179,10 +179,24 @@ export default class Themes {
         })
     }
 
-    async getLongBreakURL() {
-        const settings = await this.settings.get()
-        return settings.theme === 'default'
-            ? path.join(__dirname, 'themes', 'default', 'long.html')
-            : 'Not implemented'
+    async getLongBreakURL({ theme }: { theme?: string } = {}): Promise<string> {
+
+        let url = path.join(__dirname, 'themes', 'default', 'long.html')
+
+        if (theme) {
+
+            url = path.join(this.getThemesFolder(), theme, 'dist', 'long.html')
+        }
+        else {
+
+            const settings = await this.settings.get()
+
+            if (settings.theme != 'default') {
+
+                url = path.join(this.getThemesFolder(), settings.theme, 'dist', 'long.html')
+            }
+        }
+
+        return url
     }
 }

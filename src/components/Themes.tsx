@@ -17,6 +17,7 @@ import {
   Search,
   StatusDisabled,
   Trash,
+  View,
 } from "grommet-icons";
 import { IThemePackage } from "../interfaces";
 
@@ -56,7 +57,6 @@ export default function Themes() {
   }, [getDownloadedThemes]);
 
   const handleDelete = async (packg: IThemePackage) => {
-    
     await deleteTheme(packg.name);
 
     const downloaded = await getDownloadedThemes();
@@ -85,6 +85,10 @@ export default function Themes() {
     }
 
     fetch();
+  };
+
+  const handleTest = async (packg: IThemePackage) => {
+    takeLongBreak({ theme: packg.name });
   };
 
   return (
@@ -156,7 +160,17 @@ export default function Themes() {
                     <Box align="center" justify="center">
                       {
                         {
-                          downloaded: <Checkmark />,
+                          downloaded: (
+                            <Box>
+                              <Button
+                                plain
+                                label="Test"
+                                icon={<View />}
+                                onClick={() => handleTest(datum)}
+                              />
+                              <Checkmark />
+                            </Box>
+                          ),
                           available: (
                             <Button
                               plain
@@ -230,21 +244,21 @@ export default function Themes() {
                   pad="xsmall"
                 >
                   <Text>{datum.name}</Text>
-                  <Box align="center" justify="center">
-                    {
-                      {
-                        downloaded: (
-                          <Button
-                            plain
-                            icon={<Trash />}
-                            onClick={() => handleDelete(datum)}
-                          />
-                        ),
-                        available: null,
-                        downloading: null,
-                        error: null,
-                      }[datum.status]
-                    }
+
+                  <Box align="center" justify="center" direction="row">
+                    <Button
+                      label="Test"
+                      size="small"
+                      icon={<View />}
+                      margin={{ right: "medium" }}
+                      plain
+                      onClick={() => handleTest(datum)}
+                    />
+                    <Button
+                      plain
+                      icon={<Trash />}
+                      onClick={() => handleDelete(datum)}
+                    />
                   </Box>
                 </Box>
               )}
@@ -261,7 +275,7 @@ export default function Themes() {
       >
         <Button
           label="Open long break window in dev mode"
-          onClick={() => takeLongBreak(true)}
+          onClick={() => takeLongBreak({ theme: "development" })}
         />
       </Box>
     </Box>
