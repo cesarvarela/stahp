@@ -18,6 +18,10 @@ const api: IStahp = {
     getActiveTime: () => ipcRenderer.invoke('getActiveTime'),
 
     getGeneralSettings: () => ipcRenderer.invoke('getGeneralSettings'),
+
+    searchThemes: (query: string) => ipcRenderer.invoke('searchThemes', query),
+
+    downloadTheme: (name: string) => ipcRenderer.invoke('downloadTheme', name),
 }
 
 contextBridge.exposeInMainWorld("stahp", api);

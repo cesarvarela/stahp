@@ -28,6 +28,10 @@ interface IThemesSettings extends Record<string, unknown> {
     theme: string,
 }
 
+interface Theme {
+    name: string,
+}
+
 interface IStahp {
     saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
     getSchedulerSettings: () => Promise<IScheduleSettings>,
@@ -44,6 +48,10 @@ interface IStahp {
     getActiveTime: () => Promise<number>,
 
     getGeneralSettings: () => Promise<IGeneralSettings>,
+
+    searchThemes: (query: string) => Promise<Theme[]>,
+
+    downloadTheme: (name: string) => Promise<any>,
 }
 
 interface IStahpBlocker {
