@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -11,9 +11,16 @@ import {
   List,
   Spinner,
 } from "grommet";
-import { Download, DownloadOption, Search } from "grommet-icons";
+import {
+  Checkmark,
+  DownloadOption,
+  Search,
+  StatusDisabled,
+} from "grommet-icons";
+import { IThemePackage } from "../interfaces";
 
-const { takeLongBreak, searchThemes, downloadTheme } = window.stahp;
+const { takeLongBreak, searchThemes, downloadTheme, getDownloadedThemes } =
+  window.stahp;
 
 export default function Themes() {
   const [results, setResults] = useState(null);
@@ -26,23 +33,46 @@ export default function Themes() {
     setResults(null);
 
     const results = await searchThemes(query);
+
     setResults(results);
     setSearching(false);
-
-    console.log(results);
   };
 
-  const [downloading, setDownloading] = useState(false);
+  const handleDownload = async (packg: IThemePackage) => {
+    setResults((r: IThemePackage[]) =>
+      r.map((r) =>
+        r.name === packg.name ? { ...r, status: "downloading" } : r
+      )
+    );
 
-  const handleDownload = async (packg: any) => {
-    setDownloading(true);
+    try {
+      await downloadTheme(packg.name);
 
-    const result = await downloadTheme(packg.name);
-
-    setDownloading(false);
-
-    console.log(result);
+      setResults((r: IThemePackage[]) =>
+        r.map((r) =>
+          r.name === packg.name ? { ...r, status: "downloaded" } : r
+        )
+      );
+    } catch (e) {
+      setResults((r: IThemePackage[]) =>
+        r.map((r) => (r.name === packg.name ? { ...r, status: "error" } : r))
+      );
+    }
   };
+
+  const [downloaded, setDownloaded] = useState([]);
+
+  useEffect(() => {
+    async function fetch() {
+      const downloaded = await getDownloadedThemes();
+
+      console.log(downloaded);
+
+      setDownloaded(downloaded);
+    }
+
+    fetch();
+  }, [getDownloadedThemes]);
 
   return (
     <Box
@@ -102,7 +132,7 @@ export default function Themes() {
                 primaryKey="name"
                 secondaryKey="description"
               >
-                {(datum: Record<string, unknown>) => (
+                {(datum: IThemePackage) => (
                   <Box
                     align="center"
                     justify="between"
@@ -111,11 +141,20 @@ export default function Themes() {
                   >
                     <Text>{datum.name}</Text>
                     <Box align="center" justify="center">
-                      <Button
-                        plain
-                        icon={<DownloadOption />}
-                        onClick={() => handleDownload(datum)}
-                      />
+                      {
+                        {
+                          downloaded: <Checkmark />,
+                          available: (
+                            <Button
+                              plain
+                              icon={<DownloadOption />}
+                              onClick={() => handleDownload(datum)}
+                            />
+                          ),
+                          downloading: <Spinner />,
+                          error: <StatusDisabled />,
+                        }[datum.status]
+                      }
                     </Box>
                   </Box>
                 )}
@@ -159,11 +198,45 @@ export default function Themes() {
           pad="small"
         >
           <Text size="small" weight="bold">
-            Available Themes
+            Downloaded Themes
           </Text>
         </CardHeader>
-        <CardBody pad="small" direction="row" align="center">
-          stahp-theme-default
+        <CardBody>
+          <Box align="stretch" justify="center" margin={{ top: "small" }}>
+            <List
+              data={downloaded}
+              pad="xsmall"
+              primaryKey="name"
+              secondaryKey="description"
+            >
+              {(datum: IThemePackage) => (
+                <Box
+                  align="center"
+                  justify="between"
+                  direction="row"
+                  pad="xsmall"
+                >
+                  <Text>{datum.name}</Text>
+                  <Box align="center" justify="center">
+                    {
+                      {
+                        downloaded: <Checkmark />,
+                        available: (
+                          <Button
+                            plain
+                            icon={<DownloadOption />}
+                            onClick={() => handleDownload(datum)}
+                          />
+                        ),
+                        downloading: <Spinner />,
+                        error: <StatusDisabled />,
+                      }[datum.status]
+                    }
+                  </Box>
+                </Box>
+              )}
+            </List>
+          </Box>
         </CardBody>
       </Card>
       <Box

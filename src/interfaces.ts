@@ -36,7 +36,7 @@ interface IThemePackage {
     publisher: { username: string, email: string }
     scope: string
     version: string
-    downloaded: boolean
+    status: "available" | "downloaded" | "downloading" | "error"
 }
 
 interface IStahp {
@@ -57,8 +57,8 @@ interface IStahp {
     getGeneralSettings: () => Promise<IGeneralSettings>,
 
     searchThemes: (query: string) => Promise<IThemePackage[]>,
-
-    downloadTheme: (name: string) => Promise<any>,
+    downloadTheme: (name: string) => Promise<IThemePackage>,
+    getDownloadedThemes: () => Promise<IThemePackage[]>,
 }
 
 interface IStahpBlocker {

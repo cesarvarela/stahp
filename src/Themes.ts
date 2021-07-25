@@ -22,19 +22,39 @@ export default class Themes {
             return settings
         })
 
+        ipcMain.handle('getDownloadedThemes', async () => {
+            const themes = await this.getDownloadedThemes()
+            return themes
+        })
+
         ipcMain.handle('searchThemes', async (_, query: string) => {
 
             const res = await this.search(query)
-
             return res
         })
 
         ipcMain.handle('downloadTheme', async (_, name) => {
 
             const res = await this.download(name)
-
             return res
         })
+    }
+
+    async getDownloadedThemes(): Promise<IThemePackage[]> {
+
+        const themesFolder = this.getThemesFolder()
+        const themes: IThemePackage[] = []
+        const files = await fs.readdir(themesFolder, { withFileTypes: true })
+
+        for (const dir of files.filter(f => f.isDirectory())) {
+
+            const blob = await fs.readFile(path.join(themesFolder, dir.name, 'package.json'), 'utf8')
+            const packageJson = JSON.parse(blob)
+
+            themes.push(packageJson)
+        }
+
+        return themes
     }
 
     async search(query: string): Promise<IThemePackage[]> {
@@ -42,14 +62,17 @@ export default class Themes {
         const libnpmsearch = require('libnpmsearch')
         const results: IThemePackage[] = await libnpmsearch(`stahp-theme-${query}`)
 
+        const availables: IThemePackage[] = []
+
         for (const result of results) {
 
-            if (this.isDownloaded(result.name)) {
-                result.downloaded = await this.isDownloaded(result.name)
+            if (!(await this.isDownloaded(result.name))) {
+
+                availables.push({ ...result, status: 'available' })
             }
         }
 
-        return results
+        return availables
     }
 
     async download(name: string) {
@@ -57,14 +80,13 @@ export default class Themes {
         let result = null
 
         try {
-
             const themeFolder = path.join(this.getThemesFolder(), name)
             const tarballPath = await this.downloadPackage(name)
             result = await this.extractPackage(tarballPath, themeFolder)
 
         } catch (err) {
 
-            console.log(err)
+            console.log('weee', err)
         }
 
         return result
@@ -108,23 +130,23 @@ export default class Themes {
 
     private async extractPackage(tarball: string, where: string) {
 
+        try {
+
+            await fs.access(where, FSCONSTANTS.F_OK)
+
+        } catch (e) {
+
+            await fs.mkdir(where, { recursive: true })
+        }
+
         const tar = require('tar')
 
         return new Promise((resolve, reject) => {
 
             tar.x({
-                file: tarball, cwd: where, strip: 1, filter: (path: string) => {
-
-                    if (path.startsWith('package/dist') || path === 'package/package.json') {
-
-                        return true
-                    }
-
-                    return false
-                }
+                file: tarball, cwd: where, strip: 1, filter: (path: string) => path.startsWith('package/dist') || path === 'package/package.json'
             },
                 (err: any, files: any) => {
-
                     if (err) {
                         reject(err)
                     }

@@ -20,8 +20,8 @@ const api: IStahp = {
     getGeneralSettings: () => ipcRenderer.invoke('getGeneralSettings'),
 
     searchThemes: (query: string) => ipcRenderer.invoke('searchThemes', query),
-
     downloadTheme: (name: string) => ipcRenderer.invoke('downloadTheme', name),
+    getDownloadedThemes: () => ipcRenderer.invoke('getDownloadedThemes'),
 }
 
 contextBridge.exposeInMainWorld("stahp", api);
