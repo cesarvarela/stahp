@@ -7,7 +7,7 @@ const api: IStahp = {
 
     takeIndefiniteBreak: () => ipcRenderer.invoke('takeIndefiniteBreak'),
 
-    takeLongBreak: (dev) => ipcRenderer.invoke('takeLongBreak', dev),
+    takeLongBreak: (options) => ipcRenderer.invoke('takeLongBreak', options),
     getActivitySettings: () => ipcRenderer.invoke('getActivitySettings'),
     setActivitySettings: (settings: IActivitySettings) => ipcRenderer.invoke('setActivitySettings', settings),
 
@@ -18,6 +18,11 @@ const api: IStahp = {
     getActiveTime: () => ipcRenderer.invoke('getActiveTime'),
 
     getGeneralSettings: () => ipcRenderer.invoke('getGeneralSettings'),
+
+    searchThemes: (query: string) => ipcRenderer.invoke('searchThemes', query),
+    downloadTheme: (name: string) => ipcRenderer.invoke('downloadTheme', name),
+    getDownloadedThemes: () => ipcRenderer.invoke('getDownloadedThemes'),
+    deleteTheme: (name: string) => ipcRenderer.invoke('deleteTheme', name),
 }
 
 contextBridge.exposeInMainWorld("stahp", api);

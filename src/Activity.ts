@@ -2,15 +2,9 @@ import { ipcMain, powerMonitor, powerSaveBlocker } from "electron";
 import { IActivitySettings } from "./interfaces";
 import Settings from "./Settings";
 
-enum State {
-    tracking,
-    breaking,
-}
-
 export default class Activity {
 
-    private state: State = State.tracking
-    private settings: Settings<IActivitySettings> = null
+    public settings: Settings<IActivitySettings> = null
 
     private countIddleTime: boolean = false
 
@@ -40,13 +34,14 @@ export default class Activity {
         //TODO: does this work on windows?
         powerSaveBlocker.start('prevent-app-suspension')
 
-        this.settings = new Settings<IActivitySettings>('activity', {
+        const [instance, settings] = await Settings.create<IActivitySettings>('activity', {
             activeTargetTime: 45 * 60,
             longBreakTargetTime: 5 * 60,
             enabled: true,
+            theme: 'stahp-theme-default',
         })
 
-        const settings = await this.settings.get()
+        this.settings = instance
 
         this.activeTargetTime = settings.activeTargetTime
         this.longBreakTargetTime = settings.longBreakTargetTime
@@ -68,7 +63,7 @@ export default class Activity {
             this.enabled = updated.enabled
 
             if (updated.enabled) {
-                
+
                 this.start()
             } else {
 
@@ -84,12 +79,11 @@ export default class Activity {
         }
     }
 
-    takeLongBreak = () => {
+    longBreak = () => {
 
         console.log('long break')
 
         this.clearIntervals()
-        this.state = State.breaking
         this.longBreakTime = 0
 
         this.longBreakInterval = setInterval(() => {
@@ -114,7 +108,6 @@ export default class Activity {
             console.log('tracking')
 
             this.clearIntervals()
-            this.state = State.tracking
             this.activeTime = 0
             this.activeInterval = setInterval(async () => {
 

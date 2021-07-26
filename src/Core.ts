@@ -90,18 +90,7 @@ class Core {
 
     setupActivity() {
 
-        this.activity = new Activity(
-            () => {
-
-                this.activity.takeLongBreak()
-                this.block()
-
-            }, () => {
-
-                this.activity.start()
-                this.unblock()
-            },
-        )
+        this.activity = new Activity(this.startLongBreak, this.endLongBreak)
 
         this.activity.setup()
     }
@@ -118,25 +107,14 @@ class Core {
             }
         })
 
-        ipcMain.handle('takeLongBreak', (_, dev: boolean = false) => {
+        ipcMain.handle('takeLongBreak', (_, options: { theme?: string } = {}) => this.startLongBreak(options))
 
-            this.block(dev)
-            this.activity.takeLongBreak()
-        })
-
-        ipcMain.handle('skipBreak', async () => {
-
-            this.activity.stop()
-            this.activity.start()
-
-            this.unblock()
-        })
+        ipcMain.handle('skipBreak', async () => this.endLongBreak({ isSkip: true }))
 
         ipcMain.handle('takeIndefiniteBreak', () => {
 
             this.activity.stop()
 
-            // this.short()
             this.block()
         })
 
@@ -144,6 +122,30 @@ class Core {
 
             e.sender.openDevTools()
         })
+    }
+
+    async startLongBreak({ theme }: { theme?: string } = {}) {
+
+        let selectedTheme = theme
+
+        if (!theme) {
+
+            const { theme } = await this.activity.settings.get()
+            selectedTheme = theme
+        }
+
+        this.activity.longBreak()
+        this.block({ theme: selectedTheme })
+    }
+
+    async endLongBreak({ isSkip = false, resume = true }: { isSkip?: boolean, resume?: boolean } = {}) {
+
+        this.activity.stop()
+        this.unblock()
+
+        if (resume) {
+            this.activity.start()
+        }
     }
 
     async unblock() {
@@ -160,63 +162,23 @@ class Core {
         this.windows = []
     }
 
-    async block(dev: boolean = false) {
+    async block({ theme = 'stahp-theme-default', frame = false }: { theme?: string, frame?: boolean } = null) {
 
         await this.unblock()
 
         const displays = screen.getAllDisplays()
 
         for (const display of displays) {
-            const window = await this.openBlockerWindow({ display, dev })
+            const window = await this.openBlockerWindow({ display, theme, frame })
             this.windows.push(window)
         }
     }
 
-    async short() {
-
-        const displays = screen.getAllDisplays()
-
-        for (const display of displays) {
-            const window = await this.openShortWindow({ display })
-            this.shorts.push(window)
-        }
-    }
-
-    async openShortWindow({ display }: { display: Display }) {
-
-        const size = { width: 400, height: 200 }
-        const bounds: Electron.Rectangle = { ...size, x: display.bounds.x + (display.bounds.width - size.width) / 2, y: display.bounds.y + (display.bounds.height - size.height) / 2 }
-
-        const window = new BrowserWindow({
-            ...bounds,
-            frame: false,
-            skipTaskbar: true,
-            opacity: 0,
-            vibrancy: 'light',
-            webPreferences: {
-                preload: SETTINGS_WEBPACK_ENTRY
-            },
-        });
-
-        window.loadFile(path.resolve(app.getAppPath(), 'themes', 'default', 'short.html'))
-        window.setAlwaysOnTop(true, "screen-saver")
-
-        //TODO: https://github.com/electron/electron/issues/10862
-        setTimeout(() => window.setBounds(bounds), 0);
-        setTimeout(() => window.setBounds(bounds), 0);
-        setTimeout(() => window.setBounds(bounds), 0);
-        setTimeout(() => window.setBounds(bounds), 0);
-
-        await fadeWindowIn(window)
-
-        return window
-    }
-
-    async openBlockerWindow({ display, dev }: { display: Display, dev: boolean }) {
+    async openBlockerWindow({ display, theme, frame }: { display: Display, theme: string, frame: boolean }) {
 
         const window = new BrowserWindow({
             ...display.bounds,
-            frame: dev,
+            frame: frame || theme === 'development',
             skipTaskbar: true,
             enableLargerThanScreen: true,
             opacity: 0,
@@ -226,13 +188,14 @@ class Core {
             },
         });
 
-        if (dev) {
+        if (theme && theme == "development") {
 
             window.loadURL('http://localhost:1234')
 
         } else {
 
-            const file = await this.themes.getLongBreakURL()
+            const file = await this.themes.getLongBreakURL({ theme })
+
             window.loadFile(file)
 
             window.setAlwaysOnTop(true, "screen-saver")

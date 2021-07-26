@@ -17,7 +17,8 @@ interface IScheduleSettings extends Record<string, unknown> {
 interface IActivitySettings extends Record<string, unknown> {
     longBreakTargetTime: number
     activeTargetTime: number
-    enabled: boolean
+    enabled: boolean,
+    theme: string,
 }
 
 interface IGeneralSettings extends Record<string, unknown> {
@@ -25,7 +26,17 @@ interface IGeneralSettings extends Record<string, unknown> {
 }
 
 interface IThemesSettings extends Record<string, unknown> {
-    theme: string,
+}
+
+interface IThemePackage {
+    date: Date,
+    links: { npm: string }
+    maintainers: []
+    name: string
+    publisher: { username: string, email: string }
+    scope: string
+    version: string
+    status: "available" | "downloaded" | "downloading" | "error"
 }
 
 interface IStahp {
@@ -33,7 +44,7 @@ interface IStahp {
     getSchedulerSettings: () => Promise<IScheduleSettings>,
 
     takeIndefiniteBreak: () => Promise<any>,
-    takeLongBreak: (dev?: boolean) => Promise<void>,
+    takeLongBreak: (options?: { theme?: string }) => Promise<void>,
 
     getLongBreakTime: () => Promise<number>,
     getLongBreakTargetTime: () => Promise<number>,
@@ -44,6 +55,11 @@ interface IStahp {
     getActiveTime: () => Promise<number>,
 
     getGeneralSettings: () => Promise<IGeneralSettings>,
+
+    searchThemes: (query: string) => Promise<IThemePackage[]>,
+    downloadTheme: (name: string) => Promise<IThemePackage>,
+    getDownloadedThemes: () => Promise<IThemePackage[]>,
+    deleteTheme: (name: string) => Promise<boolean>,
 }
 
 interface IStahpBlocker {
@@ -56,4 +72,4 @@ interface IStahpBlocker {
     getThemesSettings: () => Promise<IThemesSettings>,
 }
 
-export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, IThemesSettings }
+export { ISetting, IStahp, IStahpBlocker, ISchedule, IScheduleSettings, IActivitySettings, IGeneralSettings, IThemesSettings, IThemePackage }
