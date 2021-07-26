@@ -19,7 +19,6 @@ class Core {
     private settingsWindow: BrowserWindow = null
     private tray: Tray = null
     private windows: BrowserWindow[] = []
-    private shorts: BrowserWindow[] = []
     private scheduler: Scheduler = null
     private activity: Activity = null
     private themes: Themes = null
@@ -31,7 +30,6 @@ class Core {
         await this.setupIpc()
         await this.openSettingsWindow()
 
-        await this.setupScheduler()
         await this.setupActivity()
         await this.setupThemes()
     }
@@ -73,19 +71,6 @@ class Core {
         ])
 
         this.tray.setContextMenu(menu)
-    }
-
-    setupScheduler() {
-
-        this.scheduler = new Scheduler(
-            () => {
-
-                this.activity.stop()
-                this.block()
-            }
-        )
-
-        this.scheduler.setup()
     }
 
     setupActivity() {

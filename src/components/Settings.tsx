@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Grommet, Box, Tabs, Tab } from "grommet";
-import Scheduled from "./Scheduled";
 import Activity from "./Activity";
 import theme from "../theme";
 import Themes from "./Themes";
@@ -51,9 +50,6 @@ export default function Settings() {
         >
           <Tab title="Activity">
             <Activity />
-          </Tab>
-          <Tab title="Schedule">
-            <Scheduled />
           </Tab>
           <Tab title="Themes">
             <Themes />
