@@ -12,6 +12,7 @@ import {
   CardBody,
   CardFooter,
   Spinner,
+  Heading,
 } from "grommet";
 import { Add, Trash } from "grommet-icons";
 import styled from "styled-components";
@@ -55,24 +56,18 @@ function Schedule({
 }) {
   return (
     <Card
-      background={{ color: "background" }}
+      background={{ color: "background-front" }}
       margin={{ top: index > 0 ? "small" : undefined }}
+      elevation="none"
     >
-      <CardHeader
-        align="center"
-        direction="row"
-        flex={false}
-        justify="between"
-        gap="medium"
-        pad="small"
-      >
-        <Text size="small" weight="bold">
+      <CardHeader pad="small">
+        <Heading level="4" size="small">
           Scheduled Break
-        </Text>
+        </Heading>
       </CardHeader>
-      <CardBody pad="xsmall" align="start">
-        <Box align="center" justify="center" direction="row" pad="small">
-          <Text margin={{ right: "small" }}>Take a break every</Text>
+      <CardBody pad="xsmall" align="start" gap="medium">
+        <Box direction="row" pad="small" gap="small">
+          <Text>Take a break every</Text>
           <CheckBoxGroup
             options={days}
             direction="row"
@@ -82,15 +77,14 @@ function Schedule({
             onChange={(e) => onChange({ value: { ...value, days: e.value } })}
           />
         </Box>
-        <Box align="center" justify="center" pad="small" direction="row">
-          <Text margin={{ right: "small" }}>At</Text>
+        <Box pad="small" direction="row" gap="small" align="center">
+          <Text>At</Text>
           <TimeSelect
             labelKey="label"
             valueKey={{ key: "value", reduce: true }}
             options={hours}
             size="small"
             value={[value.hour]}
-            margin={{ right: "small" }}
             onChange={(e) =>
               onChange({ value: { ...value, hour: parseInt(e.value) } })
             }
@@ -114,13 +108,13 @@ function Schedule({
         justify="between"
         gap="medium"
         pad="small"
-        background={{ color: "active" }}
+        background={{ color: "background-contrast" }}
       >
         <Button
           size="small"
           label="Delete"
           plain
-          icon={<Trash />}
+          icon={<Trash size="small" />}
           onClick={onDelete}
         />
       </CardFooter>
@@ -183,10 +177,9 @@ function Schedules({
           align="center"
           justify="center"
           pad="large"
-          background={{ color: "active" }}
+          background={{ color: "background-contrast" }}
           round="small"
           direction="row"
-          hoverIndicator="background"
           style={{ cursor: "pointer" }}
           onClick={onAddClick}
         >
