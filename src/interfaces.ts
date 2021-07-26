@@ -29,12 +29,8 @@ interface IThemesSettings extends Record<string, unknown> {
 }
 
 interface IThemePackage {
-    date: Date,
-    links: { npm: string }
-    maintainers: []
     name: string
     publisher: { username: string, email: string }
-    scope: string
     version: string
     status: "available" | "downloaded" | "downloading" | "error"
 }

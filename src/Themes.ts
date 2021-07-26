@@ -60,6 +60,8 @@ export default class Themes {
             themes.push(packageJson)
         }
 
+        themes.push({ name: 'stahp-theme-default', version: 'latest', publisher: { email: 'mail@cesarvarela.com', username: 'cesarvarela' }, status: 'downloaded' })
+
         return themes
     }
 
@@ -72,7 +74,7 @@ export default class Themes {
 
         for (const result of results) {
 
-            if (!(await this.isDownloaded(result.name))) {
+            if (!(await this.isDownloaded(result.name)) && result.name != 'stahp-theme-default') {
 
                 availables.push({ ...result, status: 'available' })
             }

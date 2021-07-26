@@ -257,6 +257,7 @@ export default function Themes() {
                     />
                     <Button
                       plain
+                      disabled={datum.name == "stahp-theme-default"}
                       icon={<Trash />}
                       onClick={() => handleDelete(datum)}
                     />
