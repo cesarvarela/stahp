@@ -90,18 +90,7 @@ class Core {
 
     setupActivity() {
 
-        this.activity = new Activity(
-            () => {
-
-                this.activity.longBreak()
-                this.block()
-
-            }, () => {
-
-                this.activity.start()
-                this.unblock()
-            },
-        )
+        this.activity = new Activity(this.startLongBreak, this.endLongBreak)
 
         this.activity.setup()
     }
@@ -118,19 +107,9 @@ class Core {
             }
         })
 
-        ipcMain.handle('takeLongBreak', (_, { theme }: { theme?: string } = {}) => {
+        ipcMain.handle('takeLongBreak', (_, options: { theme?: string } = {}) => this.startLongBreak(options))
 
-            this.block({ theme })
-            this.activity.longBreak()
-        })
-
-        ipcMain.handle('skipBreak', async () => {
-
-            this.activity.stop()
-            this.activity.start()
-
-            this.unblock()
-        })
+        ipcMain.handle('skipBreak', async () => this.endLongBreak({ isSkip: true }))
 
         ipcMain.handle('takeIndefiniteBreak', () => {
 
@@ -143,6 +122,30 @@ class Core {
 
             e.sender.openDevTools()
         })
+    }
+
+    async startLongBreak({ theme }: { theme?: string } = {}) {
+
+        let selectedTheme = theme
+
+        if (!theme) {
+
+            const { theme } = await this.activity.settings.get()
+            selectedTheme = theme
+        }
+
+        this.activity.longBreak()
+        this.block({ theme: selectedTheme })
+    }
+
+    async endLongBreak({ isSkip = false, resume = true }: { isSkip?: boolean, resume?: boolean } = {}) {
+
+        this.activity.stop()
+        this.unblock()
+
+        if (resume) {
+            this.activity.start()
+        }
     }
 
     async unblock() {

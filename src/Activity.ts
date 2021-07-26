@@ -4,7 +4,7 @@ import Settings from "./Settings";
 
 export default class Activity {
 
-    private settings: Settings<IActivitySettings> = null
+    public settings: Settings<IActivitySettings> = null
 
     private countIddleTime: boolean = false
 
