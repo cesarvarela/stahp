@@ -191,13 +191,7 @@ export default function Activity() {
         </Box>
       ) : (
         <Card background={{ color: "background-front" }} elevation="none">
-          <CardHeader
-            align="center"
-            direction="row"
-            flex={false}
-            justify="between"
-            pad="small"
-          >
+          <CardHeader pad="small">
             <Heading level="2" size="small">
               Activity breaks
             </Heading>
