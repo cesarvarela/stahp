@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
-  Card,
-  CardHeader,
   Text,
-  CardBody,
   Box,
   Select,
   CheckBox,
   Spinner,
   Form,
   Button,
-  CardFooter,
   Heading,
+  Card,
+  CardBody,
 } from "grommet";
 import { IActivitySettings, IThemePackage } from "../interfaces";
 import styled from "styled-components";
@@ -66,60 +64,74 @@ function ActivityForm({
       }}
     >
       <Box gap="medium">
-        <Box direction="row" align="center" gap="small">
-          <Box align="center" justify="center" direction="row">
-            <CheckBox
-              toggle
-              checked={value.enabled}
-              onChange={() => setValue({ ...value, enabled: !value.enabled })}
+        <Box gap="medium">
+          <Box direction="row" align="center" gap="small">
+            <Box align="center" justify="center" direction="row">
+              <CheckBox
+                toggle
+                checked={value.enabled}
+                onChange={() => setValue({ ...value, enabled: !value.enabled })}
+              />
+            </Box>
+            <Text>Take a long break</Text>
+            <SelectSmall
+              options={lengthOptions}
+              labelKey="label"
+              valueKey={{ key: "value", reduce: true }}
+              size="small"
+              value={[value.activeTargetTime]}
+              onChange={(e) =>
+                setValue({
+                  ...value,
+                  activeTargetTime: parseInt(e.target.value),
+                })
+              }
+            />
+            <Text>for</Text>
+            <SelectSmall
+              options={forOptions}
+              labelKey="label"
+              valueKey={{ key: "value", reduce: true }}
+              size="small"
+              value={[value.longBreakTargetTime]}
+              margin={{ right: "small" }}
+              onChange={(e) =>
+                setValue({
+                  ...value,
+                  longBreakTargetTime: parseInt(e.target.value),
+                })
+              }
             />
           </Box>
-          <Text>Take a long break</Text>
-          <SelectSmall
-            options={lengthOptions}
-            labelKey="label"
-            valueKey={{ key: "value", reduce: true }}
-            size="small"
-            value={[value.activeTargetTime]}
-            onChange={(e) =>
-              setValue({
-                ...value,
-                activeTargetTime: parseInt(e.target.value),
-              })
-            }
-          />
-          <Text>for</Text>
-          <SelectSmall
-            options={forOptions}
-            labelKey="label"
-            valueKey={{ key: "value", reduce: true }}
-            size="small"
-            value={[value.longBreakTargetTime]}
-            margin={{ right: "small" }}
-            onChange={(e) =>
-              setValue({
-                ...value,
-                longBreakTargetTime: parseInt(e.target.value),
-              })
-            }
-          />
+          <Box align="center" justify="start" direction="row" gap="small">
+            <Text>Use theme</Text>
+            <Select
+              options={themes}
+              labelKey="name"
+              valueKey={{ key: "name", reduce: true }}
+              value={[value.theme]}
+              onChange={(e) =>
+                setValue({
+                  ...value,
+                  theme: e.target.value,
+                })
+              }
+              size="small"
+            />
+          </Box>
         </Box>
-        <Box align="center" justify="start" direction="row" gap="small">
-          <Text>Use theme</Text>
-          <Select
-            options={themes}
-            labelKey="name"
-            valueKey={{ key: "name", reduce: true }}
-            value={[value.theme]}
-            onChange={(e) =>
-              setValue({
-                ...value,
-                theme: e.target.value,
-              })
-            }
-            size="small"
-          />
-        </Box>
+        {themes && themes.length == 1 && (
+          <Card elevation="none" background={{ color: "background-contrast" }}>
+            <CardBody>
+              <Box direction="row" gap="xsmall" align="center">
+                <Text size="small" weight="bold">
+                  💡 You only one have theme download them by clicking on the
+                  themes tab
+                </Text>
+              </Box>
+            </CardBody>
+          </Card>
+        )}
       </Box>
     </Form>
   );
@@ -200,7 +212,11 @@ export default function Activity() {
           <Spinner size="medium" />
         </Box>
       ) : (
-        <Box background={{ color: "background-front" }} pad="medium" round="small">
+        <Box
+          background={{ color: "background-front" }}
+          pad="medium"
+          round="small"
+        >
           <ActivityForm themes={themes} value={settings} setValue={onChange} />
         </Box>
       )}
