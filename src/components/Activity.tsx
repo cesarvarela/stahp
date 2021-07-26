@@ -225,10 +225,6 @@ export default function Activity() {
         gap="small"
       >
         <Button label="Take a long break now" onClick={() => takeLongBreak()} />
-        <Button
-          label="Take an indefinite break now"
-          onClick={() => takeIndefiniteBreak()}
-        />
       </Box>
     </Box>
   );
