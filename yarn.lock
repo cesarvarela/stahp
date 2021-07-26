@@ -6469,10 +6469,10 @@ ssri@^8.0.0, ssri@^8.0.1:
   dependencies:
     minipass "^3.1.1"
 
-stahp-theme-default@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/stahp-theme-default/-/stahp-theme-default-1.0.1.tgz#a295170735cb7a8954c73411f101de7766e748fb"
-  integrity sha512-cJWUMDJndCCax+tM/hO6AdkY4orDufSSTLdhl8MJGl7JuxfXjmYupT3cuvMzPG+pE8asMTNAaEL8nw6s/jwIjg==
+stahp-theme-default@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/stahp-theme-default/-/stahp-theme-default-1.1.0.tgz#b09a00fa04fbf5949253769d6744b136b6291960"
+  integrity sha512-aCb3naL8b229SCRR4wC+YkIb0m8yXv44MRCjcTtGolnu8t2CK8xNtZRkFUmrTGOPWkcuwqtP/w4iDIVmP3v7UQ==
   dependencies:
     grommet "^2.17.3"
     react "^17.0.2"
