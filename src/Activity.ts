@@ -2,14 +2,8 @@ import { ipcMain, powerMonitor, powerSaveBlocker } from "electron";
 import { IActivitySettings } from "./interfaces";
 import Settings from "./Settings";
 
-enum State {
-    tracking,
-    breaking,
-}
-
 export default class Activity {
 
-    private state: State = State.tracking
     private settings: Settings<IActivitySettings> = null
 
     private countIddleTime: boolean = false
@@ -90,7 +84,6 @@ export default class Activity {
         console.log('long break')
 
         this.clearIntervals()
-        this.state = State.breaking
         this.longBreakTime = 0
 
         this.longBreakInterval = setInterval(() => {
@@ -115,7 +108,6 @@ export default class Activity {
             console.log('tracking')
 
             this.clearIntervals()
-            this.state = State.tracking
             this.activeTime = 0
             this.activeInterval = setInterval(async () => {
 
