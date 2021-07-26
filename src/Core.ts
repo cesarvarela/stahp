@@ -160,14 +160,14 @@ class Core {
         this.windows = []
     }
 
-    async block({ theme = null }: { theme?: string } = null) {
+    async block({ theme = 'stahp-theme-default', frame = false }: { theme?: string, frame?: boolean } = null) {
 
         await this.unblock()
 
         const displays = screen.getAllDisplays()
 
         for (const display of displays) {
-            const window = await this.openBlockerWindow({ display, theme })
+            const window = await this.openBlockerWindow({ display, theme, frame })
             this.windows.push(window)
         }
     }
@@ -198,7 +198,7 @@ class Core {
             },
         });
 
-        window.loadFile(path.resolve(app.getAppPath(), 'themes', 'default', 'short.html'))
+        window.loadFile(path.resolve(app.getAppPath(), 'themes', 'stahp-theme-default', 'short.html'))
         window.setAlwaysOnTop(true, "screen-saver")
 
         //TODO: https://github.com/electron/electron/issues/10862
@@ -212,11 +212,11 @@ class Core {
         return window
     }
 
-    async openBlockerWindow({ display, theme = null }: { display: Display, theme: string }) {
+    async openBlockerWindow({ display, theme, frame }: { display: Display, theme: string, frame: boolean }) {
 
         const window = new BrowserWindow({
             ...display.bounds,
-            frame: !!theme,
+            frame: frame || theme === 'development',
             skipTaskbar: true,
             enableLargerThanScreen: true,
             opacity: 0,

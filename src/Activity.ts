@@ -44,6 +44,7 @@ export default class Activity {
             activeTargetTime: 45 * 60,
             longBreakTargetTime: 5 * 60,
             enabled: true,
+            theme: 'stahp-theme-default',
         })
 
         const settings = await this.settings.get()

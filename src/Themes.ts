@@ -12,7 +12,6 @@ export default class Themes {
     async setup() {
 
         const [instance] = await Settings.create<IThemesSettings>('themes', {
-            theme: 'default',
         })
 
         this.settings = instance
@@ -179,23 +178,13 @@ export default class Themes {
         })
     }
 
-    async getLongBreakURL({ theme }: { theme?: string } = {}): Promise<string> {
+    async getLongBreakURL({ theme }: { theme: string }): Promise<string> {
 
-        let url = path.join(__dirname, 'themes', 'default', 'long.html')
+        const base = theme == 'stahp-theme-default'
+            ? path.join(__dirname, 'themes')
+            : this.getThemesFolder()
 
-        if (theme) {
-
-            url = path.join(this.getThemesFolder(), theme, 'dist', 'long.html')
-        }
-        else {
-
-            const settings = await this.settings.get()
-
-            if (settings.theme != 'default') {
-
-                url = path.join(this.getThemesFolder(), settings.theme, 'dist', 'long.html')
-            }
-        }
+        const url = path.join(base, theme, 'dist', 'long.html')
 
         return url
     }

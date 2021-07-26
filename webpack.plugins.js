@@ -7,7 +7,7 @@ module.exports = [
   new copyWebpackPlugin({
     patterns: [
       { from: path.resolve(__dirname, 'src', 'assets'), to: path.resolve(__dirname, '.webpack', 'main', 'assets') },
-      { from: path.resolve(__dirname, 'node_modules', 'stahp-theme-default', 'dist'), to: path.resolve(__dirname, '.webpack', 'main', 'themes', 'default') }
+      { from: path.resolve(__dirname, 'node_modules', 'stahp-theme-default', 'dist'), to: path.resolve(__dirname, '.webpack', 'main', 'themes', 'stahp-theme-default', 'dist') }
     ],
   }),
 ];

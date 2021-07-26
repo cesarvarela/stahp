@@ -17,7 +17,8 @@ interface IScheduleSettings extends Record<string, unknown> {
 interface IActivitySettings extends Record<string, unknown> {
     longBreakTargetTime: number
     activeTargetTime: number
-    enabled: boolean
+    enabled: boolean,
+    theme: string,
 }
 
 interface IGeneralSettings extends Record<string, unknown> {
@@ -25,7 +26,6 @@ interface IGeneralSettings extends Record<string, unknown> {
 }
 
 interface IThemesSettings extends Record<string, unknown> {
-    theme: string,
 }
 
 interface IThemePackage {
