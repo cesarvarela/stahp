@@ -136,7 +136,6 @@ class Core {
 
             this.activity.stop()
 
-            // this.short()
             this.block()
         })
 
