@@ -19,6 +19,7 @@ import {
   StatusDisabled,
   Trash,
   View,
+  Update,
 } from "grommet-icons";
 import { IThemePackage } from "../interfaces";
 
@@ -29,6 +30,18 @@ const {
   getDownloadedThemes,
   deleteTheme,
 } = window.stahp;
+
+const Loading = () => (
+  <Spinner
+    size="small"
+    animation={{
+      type: "rotateRight",
+      duration: 900,
+    }}
+  >
+    <Update />
+  </Spinner>
+);
 
 export default function Themes() {
   const [results, setResults] = useState(null);
@@ -99,127 +112,53 @@ export default function Themes() {
       direction="column"
       pad={{ top: "small" }}
     >
-      <Card
-        pad="small"
+      <Heading level="2" size="small">
+        Search themes
+      </Heading>
+      <Box
+        pad="medium"
+        round="small"
         background={{ color: "background-front" }}
         elevation="none"
       >
-        <CardHeader>
-          <Heading level="2" size="small">
-            Search themes
-          </Heading>
-        </CardHeader>
-        <CardBody>
-          <Box align="center" justify="start" direction="row" gap="small">
-            <TextInput
-              size="small"
-              textAlign="start"
-              type="text"
-              plain={false}
-              placeholder="Enter theme name"
-              value={query}
-              disabled={searching}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-            <Button
-              icon={<Search />}
-              disabled={searching}
-              plain={false}
-              size="small"
-              primary
-              onClick={() => handleSearch(query)}
-            />
-          </Box>
-          <Box align="stretch" justify="center" margin={{ top: "small" }}>
-            {searching && (
-              <Box align="center" justify="start" direction="row" gap="small">
-                <Text size="small">Searching</Text>
-                <Spinner />
-              </Box>
-            )}
+        <Box align="center" justify="start" direction="row" gap="small">
+          <TextInput
+            size="small"
+            textAlign="start"
+            type="text"
+            plain={false}
+            placeholder="Enter theme name"
+            value={query}
+            disabled={searching}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <Button
+            icon={<Search />}
+            disabled={searching}
+            plain={false}
+            size="small"
+            primary
+            onClick={() => handleSearch(query)}
+          />
+        </Box>
+        <Box align="stretch" justify="center">
+          {searching && (
+            <Box
+              align="center"
+              justify="start"
+              direction="row"
+              gap="small"
+              pad={{ top: "small" }}
+            >
+              <Text size="small">Searching</Text>
+              <Loading />
+            </Box>
+          )}
 
-            {results !== null && results.length > 0 && (
-              <List
-                data={results}
-                pad="xsmall"
-                primaryKey="name"
-                secondaryKey="description"
-              >
-                {(datum: IThemePackage) => (
-                  <Box
-                    align="center"
-                    justify="between"
-                    direction="row"
-                    pad="xsmall"
-                  >
-                    <Text>{datum.name}</Text>
-                    <Box align="center" justify="center">
-                      {
-                        {
-                          downloaded: (
-                            <Box direction="row">
-                              <Button
-                                plain
-                                label="Test"
-                                icon={<View />}
-                                margin={{ right: "medium" }}
-                                onClick={() => handleTest(datum)}
-                              />
-                              <Checkmark />
-                            </Box>
-                          ),
-                          available: (
-                            <Button
-                              plain
-                              icon={<DownloadOption />}
-                              onClick={() => handleDownload(datum)}
-                            />
-                          ),
-                          downloading: <Spinner />,
-                          error: <StatusDisabled />,
-                        }[datum.status]
-                      }
-                    </Box>
-                  </Box>
-                )}
-              </List>
-            )}
-
-            {results !== null && results.length === 0 && (
-              <Box align="center" justify="start" direction="row">
-                <Text size="small" margin={{ right: "small" }}>
-                  No themes found for query: "{query},"
-                </Text>{" "}
-                <Text
-                  size="small"
-                  weight="bold"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleSearch("")}
-                >
-                  search for all themes
-                </Text>
-              </Box>
-            )}
-          </Box>
-        </CardBody>
-      </Card>
-
-      <Card
-        background={{ color: "background-front" }}
-        margin={{ top: "medium" }}
-        pad="small"
-        elevation="none"
-      >
-        <CardHeader>
-          <Heading size="small" level="2">
-            Downloaded Themes
-          </Heading>
-        </CardHeader>
-        <CardBody>
-          <Box align="stretch" justify="center">
+          {results !== null && results.length > 0 && (
             <List
-              data={downloaded}
-              pad="xsmall"
+              data={results}
+              pad={{ top: "small" }}
               primaryKey="name"
               secondaryKey="description"
             >
@@ -231,29 +170,104 @@ export default function Themes() {
                   pad="xsmall"
                 >
                   <Text>{datum.name}</Text>
-
-                  <Box align="center" justify="center" direction="row">
-                    <Button
-                      label="Test"
-                      size="small"
-                      icon={<View />}
-                      margin={{ right: "medium" }}
-                      plain
-                      onClick={() => handleTest(datum)}
-                    />
-                    <Button
-                      plain
-                      disabled={datum.name == "stahp-theme-default"}
-                      icon={<Trash />}
-                      onClick={() => handleDelete(datum)}
-                    />
+                  <Box align="center" justify="center">
+                    {
+                      {
+                        downloaded: (
+                          <Box direction="row">
+                            <Button
+                              plain
+                              label="Test"
+                              icon={<View />}
+                              margin={{ right: "medium" }}
+                              onClick={() => handleTest(datum)}
+                            />
+                            <Checkmark />
+                          </Box>
+                        ),
+                        available: (
+                          <Button
+                            plain
+                            icon={<DownloadOption />}
+                            onClick={() => handleDownload(datum)}
+                          />
+                        ),
+                        downloading: <Loading />,
+                        error: <StatusDisabled />,
+                      }[datum.status]
+                    }
                   </Box>
                 </Box>
               )}
             </List>
-          </Box>
-        </CardBody>
-      </Card>
+          )}
+
+          {results !== null && results.length === 0 && (
+            <Box
+              align="center"
+              justify="start"
+              direction="row"
+              pad={{ top: "small" }}
+            >
+              <Text size="small" margin={{ right: "small" }}>
+                No themes found for query: "{query}"
+              </Text>{" "}
+              <Text
+                size="small"
+                weight="bold"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSearch("")}
+              >
+                search for all themes
+              </Text>
+            </Box>
+          )}
+        </Box>
+      </Box>
+
+      <Heading size="small" level="3">
+        Downloaded Themes
+      </Heading>
+      <Box
+        align="stretch"
+        justify="center"
+        background={{ color: "background-front" }}
+        pad="medium"
+        round="small"
+      >
+        <List
+          data={downloaded}
+          primaryKey="name"
+          secondaryKey="description"
+          pad={{ top: "small" }}
+        >
+          {(datum: IThemePackage) => (
+            <Box align="center" justify="between" direction="row" pad="xsmall">
+              <Text>{datum.name}</Text>
+
+              <Box align="center" justify="center" direction="row" gap="medium">
+                <Button
+                  label="Test"
+                  size="small"
+                  icon={<View />}
+                  plain
+                  onClick={() => handleTest(datum)}
+                />
+                <Button
+                  plain
+                  tip="holis"
+                  style={{
+                    opacity: datum.name == "stahp-theme-default" ? 0.5 : 1,
+                  }}
+                  disabled={datum.name == "stahp-theme-default"}
+                  icon={<Trash />}
+                  onClick={() => handleDelete(datum)}
+                />
+              </Box>
+            </Box>
+          )}
+        </List>
+      </Box>
       <Box
         align="center"
         justify="start"
@@ -262,6 +276,7 @@ export default function Themes() {
         gap="small"
       >
         <Button
+          secondary
           label="Open long break window in dev mode"
           onClick={() => takeLongBreak({ theme: "development" })}
         />

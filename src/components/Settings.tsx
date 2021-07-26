@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Grommet, Box, Tabs, Tab } from "grommet";
 import Activity from "./Activity";
-import theme from "../theme";
 import Themes from "./Themes";
+import { hpe } from "grommet-theme-hpe";
 
 const { stahp } = window;
 
@@ -29,7 +29,7 @@ export default function Settings() {
   return (
     <Grommet
       full
-      theme={theme}
+      theme={hpe}
       themeMode={themeMode}
       style={{ background: themeMode ? undefined : "transparent" }}
     >
