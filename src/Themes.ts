@@ -11,8 +11,7 @@ export default class Themes {
 
     async setup() {
 
-        const [instance] = await Settings.create<IThemesSettings>('themes', {
-        })
+        const [instance] = await Settings.create<IThemesSettings>('themes', {})
 
         this.settings = instance
 

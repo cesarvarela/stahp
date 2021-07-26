@@ -161,11 +161,12 @@ export default function Themes() {
                       {
                         {
                           downloaded: (
-                            <Box>
+                            <Box direction="row">
                               <Button
                                 plain
                                 label="Test"
                                 icon={<View />}
+                                margin={{ right: "medium" }}
                                 onClick={() => handleTest(datum)}
                               />
                               <Checkmark />

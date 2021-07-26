@@ -40,14 +40,14 @@ export default class Activity {
         //TODO: does this work on windows?
         powerSaveBlocker.start('prevent-app-suspension')
 
-        this.settings = new Settings<IActivitySettings>('activity', {
+        const [instance, settings] = await Settings.create<IActivitySettings>('activity', {
             activeTargetTime: 45 * 60,
             longBreakTargetTime: 5 * 60,
             enabled: true,
             theme: 'stahp-theme-default',
         })
 
-        const settings = await this.settings.get()
+        this.settings = instance
 
         this.activeTargetTime = settings.activeTargetTime
         this.longBreakTargetTime = settings.longBreakTargetTime

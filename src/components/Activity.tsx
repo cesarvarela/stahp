@@ -5,18 +5,18 @@ import {
   Text,
   CardBody,
   Box,
-  Select as GrommetSelect,
+  Select,
   CheckBox,
   Spinner,
   Form,
   Button,
   CardFooter,
 } from "grommet";
-import { IActivitySettings } from "../interfaces";
+import { IActivitySettings, IThemePackage } from "../interfaces";
 import styled from "styled-components";
 import { formatDuration } from "date-fns";
 
-const Select = styled(GrommetSelect)`
+const SelectSmall = styled(Select)`
   width: 100px;
 `;
 
@@ -27,6 +27,7 @@ const {
   setActivitySettings,
   getActiveTargetTime,
   getActiveTime,
+  getDownloadedThemes,
 } = window.stahp;
 
 const lengthOptions = [
@@ -51,9 +52,11 @@ const forOptions = [
 function ActivityForm({
   value,
   setValue,
+  themes,
 }: {
   value: IActivitySettings;
   setValue: (value: IActivitySettings) => void;
+  themes: IThemePackage[];
 }) {
   return (
     <Form
@@ -76,7 +79,7 @@ function ActivityForm({
           />
         </Box>
         <Text margin={{ right: "small" }}>Take a long break</Text>
-        <Select
+        <SelectSmall
           options={lengthOptions}
           labelKey="label"
           valueKey={{ key: "value", reduce: true }}
@@ -91,7 +94,7 @@ function ActivityForm({
           }
         />
         <Text margin={{ left: "small", right: "small" }}>for</Text>
-        <Select
+        <SelectSmall
           options={forOptions}
           labelKey="label"
           valueKey={{ key: "value", reduce: true }}
@@ -104,6 +107,29 @@ function ActivityForm({
               longBreakTargetTime: parseInt(e.target.value),
             })
           }
+        />
+      </Box>
+      <Box
+        align="center"
+        justify="start"
+        direction="row"
+        margin={{ top: "small" }}
+      >
+        <Box align="center" justify="center" margin={{ right: "medium" }}>
+          <Text>Use theme</Text>
+        </Box>
+        <Select
+          options={themes}
+          labelKey="name"
+          valueKey={{ key: "name", reduce: true }}
+          value={[value.theme]}
+          onChange={(e) =>
+            setValue({
+              ...value,
+              theme: e.target.value,
+            })
+          }
+          size="small"
         />
       </Box>
     </Form>
@@ -141,11 +167,16 @@ function TimeLeft() {
 
 export default function Activity() {
   const [settings, setSettings] = useState<IActivitySettings>(null);
+  const [themes, setThemes] = useState<IThemePackage[]>(null);
 
   useEffect(() => {
     const fetch = async () => {
       const settings = await getActivitySettings();
+      const themes = await getDownloadedThemes();
 
+      console.log(settings);
+
+      setThemes(themes);
       setSettings(settings);
     };
 
@@ -155,7 +186,6 @@ export default function Activity() {
   const onChange = async (settings: IActivitySettings) => {
     const updated = await setActivitySettings(settings);
     setSettings(updated);
-    console.log("submit", updated);
   };
 
   return (
@@ -184,7 +214,11 @@ export default function Activity() {
             </Text>
           </CardHeader>
           <CardBody pad="small" direction="row" align="center">
-            <ActivityForm value={settings} setValue={onChange} />
+            <ActivityForm
+              themes={themes}
+              value={settings}
+              setValue={onChange}
+            />
           </CardBody>
           <CardFooter
             align="center"
