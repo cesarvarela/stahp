@@ -75,7 +75,7 @@ class Core {
 
     setupActivity() {
 
-        this.activity = new Activity(this.startLongBreak, this.endLongBreak)
+        this.activity = new Activity(() => this.startLongBreak(), () => this.endLongBreak())
 
         this.activity.setup()
     }
@@ -109,7 +109,7 @@ class Core {
         })
     }
 
-    async startLongBreak({ theme }: { theme?: string } = {}) {
+    startLongBreak = async ({ theme }: { theme?: string } = {}) => {
 
         let selectedTheme = theme
 
@@ -123,7 +123,7 @@ class Core {
         this.block({ theme: selectedTheme })
     }
 
-    async endLongBreak({ isSkip = false, resume = true }: { isSkip?: boolean, resume?: boolean } = {}) {
+    endLongBreak = async ({ isSkip = false, resume = true }: { isSkip?: boolean, resume?: boolean } = {}) => {
 
         this.activity.stop()
         this.unblock()
