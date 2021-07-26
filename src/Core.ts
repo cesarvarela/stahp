@@ -172,46 +172,6 @@ class Core {
         }
     }
 
-    async short() {
-
-        const displays = screen.getAllDisplays()
-
-        for (const display of displays) {
-            const window = await this.openShortWindow({ display })
-            this.shorts.push(window)
-        }
-    }
-
-    async openShortWindow({ display }: { display: Display }) {
-
-        const size = { width: 400, height: 200 }
-        const bounds: Electron.Rectangle = { ...size, x: display.bounds.x + (display.bounds.width - size.width) / 2, y: display.bounds.y + (display.bounds.height - size.height) / 2 }
-
-        const window = new BrowserWindow({
-            ...bounds,
-            frame: false,
-            skipTaskbar: true,
-            opacity: 0,
-            vibrancy: 'light',
-            webPreferences: {
-                preload: SETTINGS_WEBPACK_ENTRY
-            },
-        });
-
-        window.loadFile(path.resolve(app.getAppPath(), 'themes', 'stahp-theme-default', 'short.html'))
-        window.setAlwaysOnTop(true, "screen-saver")
-
-        //TODO: https://github.com/electron/electron/issues/10862
-        setTimeout(() => window.setBounds(bounds), 0);
-        setTimeout(() => window.setBounds(bounds), 0);
-        setTimeout(() => window.setBounds(bounds), 0);
-        setTimeout(() => window.setBounds(bounds), 0);
-
-        await fadeWindowIn(window)
-
-        return window
-    }
-
     async openBlockerWindow({ display, theme, frame }: { display: Display, theme: string, frame: boolean }) {
 
         const window = new BrowserWindow({
