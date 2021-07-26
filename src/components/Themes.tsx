@@ -10,6 +10,7 @@ import {
   TextInput,
   List,
   Spinner,
+  Heading,
 } from "grommet";
 import {
   Checkmark,
@@ -98,20 +99,18 @@ export default function Themes() {
       direction="column"
       pad={{ top: "small" }}
     >
-      <Card pad="small">
-        <CardHeader
-          align="center"
-          direction="row"
-          flex={false}
-          justify="between"
-          gap="medium"
-        >
-          <Text weight="bold" size="small">
+      <Card
+        pad="small"
+        background={{ color: "background-front" }}
+        elevation="none"
+      >
+        <CardHeader>
+          <Heading level="2" size="small">
             Search themes
-          </Text>
+          </Heading>
         </CardHeader>
         <CardBody>
-          <Box align="center" justify="start" direction="row">
+          <Box align="center" justify="start" direction="row" gap="small">
             <TextInput
               size="small"
               textAlign="start"
@@ -126,7 +125,6 @@ export default function Themes() {
               icon={<Search />}
               disabled={searching}
               plain={false}
-              margin="xsmall"
               size="small"
               primary
               onClick={() => handleSearch(query)}
@@ -134,11 +132,9 @@ export default function Themes() {
           </Box>
           <Box align="stretch" justify="center" margin={{ top: "small" }}>
             {searching && (
-              <Box align="center" justify="start" direction="row">
-                <Box align="center" justify="center" pad={{ right: "small" }}>
-                  <Spinner />
-                </Box>
+              <Box align="center" justify="start" direction="row" gap="small">
                 <Text size="small">Searching</Text>
+                <Spinner />
               </Box>
             )}
 
@@ -206,31 +202,21 @@ export default function Themes() {
             )}
           </Box>
         </CardBody>
-        <CardFooter
-          align="center"
-          direction="row"
-          flex={false}
-          justify="between"
-          gap="medium"
-          pad="small"
-        />
       </Card>
 
-      <Card background={{ color: "background" }} margin={{ top: "small" }}>
-        <CardHeader
-          align="center"
-          direction="row"
-          flex={false}
-          justify="between"
-          gap="medium"
-          pad="small"
-        >
-          <Text size="small" weight="bold">
+      <Card
+        background={{ color: "background-front" }}
+        margin={{ top: "medium" }}
+        pad="small"
+        elevation="none"
+      >
+        <CardHeader>
+          <Heading size="small" level="2">
             Downloaded Themes
-          </Text>
+          </Heading>
         </CardHeader>
         <CardBody>
-          <Box align="stretch" justify="center" margin={{ top: "small" }}>
+          <Box align="stretch" justify="center">
             <List
               data={downloaded}
               pad="xsmall"
