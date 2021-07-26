@@ -18,11 +18,10 @@ import styled from "styled-components";
 import { formatDuration } from "date-fns";
 
 const SelectSmall = styled(Select)`
-  width: 100px;
+  width: 120px;
 `;
 
 const {
-  takeIndefiniteBreak,
   takeLongBreak,
   getActivitySettings,
   setActivitySettings,
@@ -185,37 +184,25 @@ export default function Activity() {
       direction="column"
       pad={{ top: "small" }}
     >
+      <Box direction="row" justify="between" align="center">
+        <Heading level="2" size="small">
+          Activity breaks
+        </Heading>
+        {settings &&
+          (settings.enabled ? (
+            <TimeLeft />
+          ) : (
+            <Text size="small">Long breaks disabled</Text>
+          ))}
+      </Box>
       {settings == null ? (
         <Box align="center" justify="center" pad="large">
           <Spinner size="medium" />
         </Box>
       ) : (
-        <Card background={{ color: "background-front" }} elevation="none">
-          <CardHeader pad="small">
-            <Heading level="2" size="small">
-              Activity breaks
-            </Heading>
-          </CardHeader>
-          <CardBody pad="small" direction="row" align="center">
-            <ActivityForm
-              themes={themes}
-              value={settings}
-              setValue={onChange}
-            />
-          </CardBody>
-          <CardFooter
-            align="center"
-            direction="row"
-            pad="small"
-            background={{ color: "background-contrast" }}
-          >
-            {settings.enabled ? (
-              <TimeLeft />
-            ) : (
-              <Text size="small">Long breaks disabled</Text>
-            )}
-          </CardFooter>
-        </Card>
+        <Box background={{ color: "background-front" }} pad="medium" round="small">
+          <ActivityForm themes={themes} value={settings} setValue={onChange} />
+        </Box>
       )}
       <Box
         align="center"
@@ -224,7 +211,11 @@ export default function Activity() {
         margin={{ top: "medium" }}
         gap="small"
       >
-        <Button label="Take a long break now" onClick={() => takeLongBreak()} />
+        <Button
+          label="Take a long break now"
+          secondary
+          onClick={() => takeLongBreak()}
+        />
       </Box>
     </Box>
   );
