@@ -51,12 +51,13 @@ jobs:
         with:
           name: sourcemaps
           path: |
-            out
+            out/stahp-win32-x64/resources/app/.webpack	
       - name: Create Sentry release
-        uses: getsentry/action-release@v2
+        uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
+          sourcemaps: out/stahp-win32-x64/resources/app/.webpack	
