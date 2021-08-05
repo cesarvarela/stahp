@@ -24,7 +24,6 @@ jobs:
           name: sourcemaps
           path: ./out
       - name: Create Sentry release
-        uses: actions/checkout@v2
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
