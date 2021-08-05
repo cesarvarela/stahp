@@ -2,7 +2,7 @@ import { ipcRenderer, contextBridge } from "electron";
 import { IActivitySettings, IScheduleSettings, IStahp } from "../../interfaces";
 import * as Sentry from "@sentry/electron/dist/renderer";
 
-Sentry.init({ dsn: "https://523e1f89c8f54baf8788cfe2dee8df51@o944978.ingest.sentry.io/5893540" });
+Sentry.init({ dsn: "https://0a6134a5d89d40c4954c6144b0e63c64@o944978.ingest.sentry.io/5893671" });
 
 const api: IStahp = {
     saveSchedulerSettings: (settings: IScheduleSettings) => ipcRenderer.invoke('saveSchedulerSettings', settings),
