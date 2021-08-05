@@ -1,4 +1,4 @@
-import { app } from 'electron'
+import { app, session } from 'electron'
 import * as Sentry from "@sentry/electron/dist/main"
 import Core from './Core'
 
@@ -14,8 +14,17 @@ let core = null
 app.on('ready', async () => {
   core = new Core()
   await core.init()
-  // await core.downloadTheme()
-  // await core.block()
+
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "default-src 'unsafe-inline' 'self' 'unsafe-eval' data: *.sentry.io *.cloudfront.net",
+        ]
+      }
+    })
+  })
 });
 
 app.on('window-all-closed', () => {

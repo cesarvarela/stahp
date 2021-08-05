@@ -116,6 +116,8 @@
   },
   "dependencies": {
     "@sentry/electron": "^2.5.1",
+    "@sentry/react": "^6.10.0",
+    "@sentry/tracing": "^6.10.0",
     "copy-webpack-plugin": "^9.0.1",
     "date-fns": "^2.22.1",
     "electron-dl": "^3.2.1",
