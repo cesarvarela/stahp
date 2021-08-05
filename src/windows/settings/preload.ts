@@ -26,6 +26,9 @@ const api: IStahp = {
     downloadTheme: (name: string) => ipcRenderer.invoke('downloadTheme', name),
     getDownloadedThemes: () => ipcRenderer.invoke('getDownloadedThemes'),
     deleteTheme: (name: string) => ipcRenderer.invoke('deleteTheme', name),
+
+    openDevTools: () => ipcRenderer.invoke('openDevTools'),
+    getVersion: () => ipcRenderer.invoke('getVersion'),
 }
 
 contextBridge.exposeInMainWorld("stahp", api);

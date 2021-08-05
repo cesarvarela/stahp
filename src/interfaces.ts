@@ -56,6 +56,8 @@ interface IStahp {
     downloadTheme: (name: string) => Promise<IThemePackage>,
     getDownloadedThemes: () => Promise<IThemePackage[]>,
     deleteTheme: (name: string) => Promise<boolean>,
+    openDevTools: () => Promise<void>,
+    getVersion: () => Promise<string>,
 }
 
 interface IStahpBlocker {

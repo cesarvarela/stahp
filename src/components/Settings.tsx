@@ -3,6 +3,7 @@ import { Grommet, Box, Tabs, Tab } from "grommet";
 import Activity from "./Activity";
 import Themes from "./Themes";
 import { hpe } from "grommet-theme-hpe";
+import General from "./General";
 
 const { stahp } = window;
 
@@ -53,6 +54,9 @@ export default function Settings() {
           </Tab>
           <Tab title="Themes">
             <Themes />
+          </Tab>
+          <Tab title="General">
+            <General />
           </Tab>
         </Tabs>
       </Box>

@@ -107,6 +107,11 @@ class Core {
 
             e.sender.openDevTools()
         })
+
+        ipcMain.handle('getVersion', async () => {
+
+            return app.getVersion()
+        })
     }
 
     startLongBreak = async ({ theme }: { theme?: string } = {}) => {
