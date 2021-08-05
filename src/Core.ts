@@ -211,7 +211,7 @@ class Core {
             this.settingsWindow = new BrowserWindow({
                 width: 800,
                 height: 600,
-                icon: path.join(__dirname, 'assets', 'pause.png'),
+                icon: path.join(__dirname, 'assets', 'logo.png'),
                 backgroundColor: nativeTheme.shouldUseDarkColors ? '#333' : '#ddd',
                 webPreferences: {
                     nodeIntegration: true,
