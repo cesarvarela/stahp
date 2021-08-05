@@ -221,7 +221,7 @@ class Core {
                 webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: true,
-                    enableRemoteModule: true,
+                    enableRemoteModule: false,
                     preload: SETTINGS_PRELOAD_WEBPACK_ENTRY
                 },
             });
