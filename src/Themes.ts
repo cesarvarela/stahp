@@ -48,16 +48,23 @@ export default class Themes {
 
         const themesFolder = this.getThemesFolder()
         const themes: IThemePackage[] = []
-        const files = await fs.readdir(themesFolder, { withFileTypes: true })
 
-        for (const dir of files.filter(f => f.isDirectory())) {
+        try {
+            const files = await fs.readdir(themesFolder, { withFileTypes: true })
 
-            const blob = await fs.readFile(path.join(themesFolder, dir.name, 'package.json'), 'utf8')
-            const packageJson = JSON.parse(blob)
+            for (const dir of files.filter(f => f.isDirectory())) {
 
-            packageJson.status = 'downloaded'
+                const blob = await fs.readFile(path.join(themesFolder, dir.name, 'package.json'), 'utf8')
+                const packageJson = JSON.parse(blob)
 
-            themes.push(packageJson)
+                packageJson.status = 'downloaded'
+
+                themes.push(packageJson)
+            }
+        }
+        catch (e) {
+            //TODO: log with sentry
+            console.log(e)
         }
 
         themes.push({ name: 'stahp-theme-default', version: 'latest', publisher: { email: 'mail@cesarvarela.com', username: 'cesarvarela' }, status: 'downloaded' })
