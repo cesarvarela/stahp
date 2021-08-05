@@ -22,9 +22,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: sourcemaps
-          path: |
-            out/stahp-win32-x64/resources/app/.webpack	
+          path: out
       - name: Create Sentry release
+        uses: actions/checkout@v2
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -32,7 +32,7 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-          sourcemaps: out/stahp-win32-x64/resources/app/.webpack	
+          sourcemaps: out
 
   publish_on_mac:
     runs-on: macos-latest
