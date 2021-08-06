@@ -175,8 +175,6 @@ export default function Activity() {
       const settings = await getActivitySettings();
       const themes = await getDownloadedThemes();
 
-      console.log(settings);
-
       setThemes(themes);
       setSettings(settings);
     };

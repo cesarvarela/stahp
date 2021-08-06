@@ -27,8 +27,6 @@ export default function General() {
 
       setSettings(settings);
       setVersion(version);
-
-      console.log(settings);
     };
 
     fetch();
