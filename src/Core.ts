@@ -70,6 +70,10 @@ class Core {
             }
         ])
 
+        this.tray.on('click', () => {
+            this.openSettingsWindow()
+        })
+
         this.tray.setContextMenu(menu)
     }
 
