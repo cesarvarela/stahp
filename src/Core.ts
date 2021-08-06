@@ -226,6 +226,11 @@ class Core {
                 },
             });
 
+            this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
+                shell.openExternal(url);
+                return { action: 'deny' };
+            });
+
             this.settingsWindow.setMenu(null)
             this.settingsWindow.loadURL(SETTINGS_WEBPACK_ENTRY)
 
