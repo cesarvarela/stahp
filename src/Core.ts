@@ -3,7 +3,6 @@ import path from 'path'
 import storage from 'electron-json-storage'
 import { Display } from 'electron/main';
 import Activity from './Activity';
-import Scheduler from './Scheduler';
 import Themes from './Themes';
 import General from './General';
 import { fadeWindowIn, fadeWindowOut } from './Fade';
@@ -19,7 +18,6 @@ class Core {
     private settingsWindow: BrowserWindow = null
     private tray: Tray = null
     private windows: BrowserWindow[] = []
-    private scheduler: Scheduler = null
     private activity: Activity = null
     private themes: Themes = null
     private General: General = null
@@ -79,7 +77,7 @@ class Core {
 
     setupActivity() {
 
-        this.activity = new Activity(() => this.startLongBreak(), () => this.endLongBreak())
+        this.activity = new Activity({ onFinishActivity: () => this.startBreak(), onFinishLongBreak: () => this.endBreak() })
 
         this.activity.setup()
     }
@@ -96,9 +94,9 @@ class Core {
             }
         })
 
-        ipcMain.handle('takeLongBreak', (_, options: { theme?: string } = {}) => this.startLongBreak(options))
+        ipcMain.handle('takeLongBreak', (_, options: { theme?: string } = {}) => this.startBreak(options))
 
-        ipcMain.handle('skipBreak', async () => this.endLongBreak({ isSkip: true }))
+        ipcMain.handle('skipBreak', async () => this.endBreak({ isSkip: true }))
 
         ipcMain.handle('takeIndefiniteBreak', () => {
 
@@ -118,7 +116,7 @@ class Core {
         })
     }
 
-    startLongBreak = async ({ theme }: { theme?: string } = {}) => {
+    startBreak = async ({ theme }: { theme?: string } = {}) => {
 
         let selectedTheme = theme
 
@@ -132,7 +130,7 @@ class Core {
         this.block({ theme: selectedTheme })
     }
 
-    endLongBreak = async ({ isSkip = false, resume = true }: { isSkip?: boolean, resume?: boolean } = {}) => {
+    endBreak = async ({ isSkip = false, resume = true }: { isSkip?: boolean, resume?: boolean } = {}) => {
 
         this.activity.stop()
         this.unblock()
