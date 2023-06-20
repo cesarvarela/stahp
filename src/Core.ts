@@ -2,7 +2,7 @@ import { Tray, Menu, app, BrowserWindow, ipcMain, screen, shell, nativeTheme } f
 import path from 'path'
 import storage from 'electron-json-storage'
 import { Display } from 'electron/main';
-import Activity from './Activity';
+import Activity from './Tracker';
 import Themes from './Themes';
 import General from './General';
 import { fadeWindowIn, fadeWindowOut } from './Fade';

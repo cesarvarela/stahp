@@ -36,9 +36,6 @@ interface IThemePackage {
 }
 
 interface IStahp {
-    saveSchedulerSettings: (settings: IScheduleSettings) => Promise<any>,
-    getSchedulerSettings: () => Promise<IScheduleSettings>,
-
     takeIndefiniteBreak: () => Promise<any>,
     takeLongBreak: (options?: { theme?: string }) => Promise<void>,
 

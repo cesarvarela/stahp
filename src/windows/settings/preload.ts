@@ -5,9 +5,6 @@ import * as Sentry from "@sentry/electron/dist/renderer";
 Sentry.init({ dsn: "https://0a6134a5d89d40c4954c6144b0e63c64@o944978.ingest.sentry.io/5893671" });
 
 const api: IStahp = {
-    saveSchedulerSettings: (settings: IScheduleSettings) => ipcRenderer.invoke('saveSchedulerSettings', settings),
-    getSchedulerSettings: () => ipcRenderer.invoke('getSchedulerSettings'),
-
     takeIndefiniteBreak: () => ipcRenderer.invoke('takeIndefiniteBreak'),
 
     takeLongBreak: (options) => ipcRenderer.invoke('takeLongBreak', options),

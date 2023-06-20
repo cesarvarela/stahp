@@ -19,7 +19,14 @@ export default class Activity {
     private onFinishActivity: () => void = null
     private onFinishLongBreak: () => void = null
 
-    constructor({ onFinishActivity, onFinishLongBreak }: { onFinishActivity: () => void, onFinishLongBreak: () => void, }) {
+    constructor(
+        {
+            onFinishActivity,
+            onFinishLongBreak
+        }: {
+            onFinishActivity: () => void,
+            onFinishLongBreak: () => void,
+        }) {
 
         this.onFinishActivity = onFinishActivity
         this.onFinishLongBreak = onFinishLongBreak
